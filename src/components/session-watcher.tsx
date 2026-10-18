@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
+import { mergeGuestCartIntoAccount } from '@/queries/cart'
 import { queryKeys } from '@/queries/keys'
 import { useSession } from '@/queries/session'
 
@@ -12,6 +13,7 @@ const MAX_TIMEOUT_MS = 2 ** 31 - 1
  * - login, logout, expiração ou troca de usuário (inclusive em outra aba):
  *   revalida a rota atual, e as rotas privadas redirecionam para o login
  *   guardando o endereço;
+ * - ao autenticar, junta o carrinho do visitante ao da conta;
  * - ao chegar o horário de expiração, revalida a sessão mesmo sem interação.
  */
 export function SessionWatcher() {
@@ -32,6 +34,12 @@ export function SessionWatcher() {
     previousToken.current = token
     void router.invalidate()
   }, [isPending, token, router])
+
+  // Ao autenticar (ou ao abrir já autenticado), junta o carrinho do visitante
+  const userId = session?.user.id
+  useEffect(() => {
+    if (userId) void mergeGuestCartIntoAccount(queryClient, userId)
+  }, [userId, queryClient])
 
   const expiresAt = session?.expiresAt
   useEffect(() => {

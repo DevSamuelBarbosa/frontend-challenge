@@ -13,6 +13,9 @@ export const queryKeys = {
     detail: (nftId: string) => ['nfts', 'detail', nftId] as const,
   },
 
+  /** Carrinho do visitante, identificado pelo id anônimo */
+  guestCart: (guestCartId: string) => ['guest-cart', guestCartId] as const,
+
   user: {
     all: ['user'] as const,
     scope: (userId: string) => ['user', userId] as const,

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { isApiError } from '@/api/errors'
 import { NotFound } from '@/components/not-found'
+import { useCart } from '@/queries/cart'
 import { useFavorites } from '@/queries/favorites'
 import { nftQueryOptions } from '@/queries/nfts'
 
@@ -17,6 +18,7 @@ function NftDetailPage() {
   const { data: nft, status, error } = useQuery(nftQueryOptions(nftId))
   const { isFavorite, toggle, mutation } = useFavorites()
   const favorite = isFavorite(nftId)
+  const cart = useCart()
 
   if (isApiError(error) && error.code === 'not_found') {
     return (
@@ -42,13 +44,25 @@ function NftDetailPage() {
           </button>{' '}
           {nft.favoritesCount} favoritos
           {mutation.isError && <span role="alert"> Não foi possível salvar o favorito.</span>}
+          {cart.mutation.isError && <span role="alert"> {cart.mutation.error.message}</span>}
         </p>
       )}
       {nft && (
         <ul>
           {nft.editions.map((edition) => (
             <li key={edition.id}>
-              {edition.name} · {edition.priceEth} ETH · {edition.available} disponíveis
+              {edition.name} · {edition.priceEth} ETH · {edition.available} disponíveis{' '}
+              <button
+                type="button"
+                disabled={edition.available === 0 || cart.mutation.isPending}
+                onClick={() =>
+                  void cart
+                    .add({ nftId, editionId: edition.id, quantity: 1 })
+                    .catch(() => undefined)
+                }
+              >
+                {edition.available === 0 ? 'Esgotado' : 'Adicionar ao carrinho'}
+              </button>
             </li>
           ))}
         </ul>

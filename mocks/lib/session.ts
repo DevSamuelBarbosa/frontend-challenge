@@ -1,7 +1,8 @@
-import type { Session, User } from '@/api/contracts'
+import { GUEST_CART_HEADER, guestCartIdSchema, type Session, type User } from '@/api/contracts'
 import { db, type MockSession } from '../db'
 import { activeScenario } from '../scenarios/runtime'
 import type { MockUser } from '../fixtures'
+import { guestCartKey } from './cart'
 import { randomToken } from './crypto'
 import { errorResponse } from './responses'
 
@@ -65,4 +66,15 @@ export function requireSession(request: Request) {
   }
 
   return { session, user }
+}
+
+/**
+ * Dono do carrinho: o usuário da sessão ou, sem token, o visitante identificado
+ * pelo cabeçalho `X-Guest-Cart-Id`. Um token inválido continua sendo 401.
+ */
+export function requireCartOwner(request: Request) {
+  if (getBearerToken(request)) return requireSession(request).user.id
+  const guest = guestCartIdSchema.safeParse(request.headers.get(GUEST_CART_HEADER))
+  if (!guest.success) throw errorResponse('unauthorized', 'Carrinho não identificado')
+  return guestCartKey(guest.data)
 }

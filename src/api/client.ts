@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { API_BASE_URL, REQUEST_TIMEOUT_MS } from './config'
+import { GUEST_CART_HEADER } from './contracts'
 import { toApiError } from './errors'
+import { guestCartId } from './guest-cart-id'
 import { sessionToken } from './session-token'
 
 /** Instância única do Axios usada por todas as chamadas REST */
@@ -15,7 +17,10 @@ export const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = sessionToken.get()
+  const guestId = guestCartId.get()
   if (token) config.headers.Authorization = `Bearer ${token}`
+  // Visitantes identificam o carrinho pelo id anônimo
+  else if (guestId) config.headers[GUEST_CART_HEADER] = guestId
   return config
 })
 
