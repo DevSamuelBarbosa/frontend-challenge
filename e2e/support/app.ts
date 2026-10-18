@@ -50,15 +50,23 @@ export class App {
    * Consulta a API simulada de dentro da página (passa pelos handlers do MSW). Serve de
    * referência para conferir se a interface mostra o que a API devolve.
    */
-  api<T>(path: string) {
-    return this.page.evaluate(async (url) => {
-      // Mesma identificação da aplicação: o token da sessão, se houver
-      const token = localStorage.getItem('nft-marketplace:session-token')
-      const response = await fetch(url, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
-      return response.json()
-    }, `/api${path}`) as Promise<T>
+  api<T>(path: string, { method = 'GET', body }: { method?: string; body?: unknown } = {}) {
+    return this.page.evaluate(
+      async ({ url, method, body }) => {
+        // Mesma identificação da aplicação: o token da sessão, se houver
+        const token = localStorage.getItem('nft-marketplace:session-token')
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: body === undefined ? undefined : JSON.stringify(body),
+        })
+        return response.status === 204 ? null : response.json()
+      },
+      { url: `/api${path}`, method, body },
+    ) as Promise<T>
   }
 
   /** Projeto mobile (barra inferior, filtros na gaveta) ou desktop */
