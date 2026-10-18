@@ -1,4 +1,4 @@
-import type { Nft, NftSummary } from '@/api/contracts'
+import type { Nft, NftEdition, NftSummary } from '@/api/contracts'
 import { minEth } from '@/lib/eth'
 
 /** Resumo do NFT para cards: menor preço entre as edições disponíveis */
@@ -22,4 +22,15 @@ export function toNftSummary(nft: Nft): NftSummary {
 /** Busca sem diferenciar maiúsculas e acentos */
 export function normalizeText(value: string) {
   return value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
+}
+
+export function findEdition(nfts: Nft[], nftId: string, editionId: string) {
+  const nft = nfts.find((n) => n.id === nftId)
+  const edition = nft?.editions.find((e) => e.id === editionId)
+  return nft && edition ? { nft, edition } : null
+}
+
+/** Quantidade máxima que pode ir para o carrinho: estoque atual limitado por pedido */
+export function maxQuantity(edition: NftEdition) {
+  return Math.min(edition.available, edition.maxPerOrder)
 }

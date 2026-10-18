@@ -1,6 +1,8 @@
 import { http, HttpResponse } from 'msw'
 import { apiUrl } from '../utils'
 import { authHandlers } from './auth'
+import { cartHandlers } from './cart'
+import { favoriteHandlers } from './favorites'
 import { nftHandlers } from './nfts'
 
 export const handlers = [
@@ -8,4 +10,6 @@ export const handlers = [
   http.get(apiUrl('/health'), () => HttpResponse.json({ status: 'ok', mocks: true })),
   ...authHandlers,
   ...nftHandlers,
+  ...favoriteHandlers,
+  ...cartHandlers,
 ]
