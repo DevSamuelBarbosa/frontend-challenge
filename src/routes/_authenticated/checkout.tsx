@@ -97,6 +97,7 @@ function ConfirmButton({ checkout, className }: { checkout: Checkout; className?
   return (
     <button
       type="submit"
+      data-checkout-confirm
       disabled={checkout.locked || checkout.preparing}
       className={cn(
         'grid place-items-center font-bold text-primary-foreground transition-colors disabled:opacity-60',

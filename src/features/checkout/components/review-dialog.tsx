@@ -47,6 +47,12 @@ export function ReviewDialog({ checkout }: { checkout: Checkout }) {
       <DialogContent
         showCloseButton={!busy}
         onEscapeKeyDown={(e) => busy && e.preventDefault()}
+        // A revisão abre por estado, sem um gatilho do diálogo: o foco volta, de forma
+        // explícita, ao botão que a abriu (senão cai no início da página)
+        onCloseAutoFocus={(e) => {
+          e.preventDefault()
+          document.querySelector<HTMLElement>('[data-checkout-confirm]')?.focus()
+        }}
         onInteractOutside={(e) => e.preventDefault()}
         className="max-h-[90dvh] gap-5 overflow-y-auto border-input bg-card sm:max-w-xl"
       >
