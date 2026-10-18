@@ -1,0 +1,12 @@
+@import 'tailwindcss';
+
+/* Tokens do design system. Os valores definitivos virão do Figma. */
+@theme {
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+}
