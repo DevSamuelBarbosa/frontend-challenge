@@ -1,5 +1,6 @@
 import { setupWorker } from 'msw/browser'
 import { handlers } from './handlers'
+import { resumePendingOrders } from './lib/orders'
 
 export const worker = setupWorker(...handlers)
 
@@ -13,4 +14,5 @@ export async function startMockWorker() {
       if (pathname.startsWith(import.meta.env.VITE_API_URL ?? '/api')) print.warning()
     },
   })
+  resumePendingOrders()
 }

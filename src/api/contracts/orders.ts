@@ -9,6 +9,7 @@ import { walletProviderSchema } from './wallets'
  *   - mesma chave e mesmo conteúdo: devolve o pedido já criado
  *   - mesma chave e conteúdo diferente: 409
  *   - cotação divergente do catálogo: 409 com o código `quote_outdated`
+ * GET  /orders?status                                      -> Order[] (mais recentes primeiro)
  * GET  /orders/:orderId                                     -> Order
  */
 
@@ -61,3 +62,6 @@ export const orderSchema = z.object({
   updatedAt: isoDateSchema,
 })
 export type Order = z.infer<typeof orderSchema>
+
+export const orderListSchema = z.array(orderSchema)
+export type OrderList = z.infer<typeof orderListSchema>

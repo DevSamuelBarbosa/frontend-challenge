@@ -26,6 +26,10 @@ export interface MockOrder extends Order {
   idempotencyKey: string
   /** Hash do corpo da requisição, para detectar reuso da chave com conteúdo diferente */
   requestFingerprint: string
+  /** Resultado do pagamento simulado, decidido na criação */
+  outcome: 'confirmed' | 'rejected'
+  /** Momento em que o pedido pendente é finalizado com o resultado acima */
+  resolveAt: string
 }
 
 export interface MockState {
