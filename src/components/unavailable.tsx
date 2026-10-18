@@ -4,8 +4,8 @@ import { cn } from '@/lib/utils'
 const UNAVAILABLE_HINT = 'Indisponível nesta demonstração'
 
 /**
- * Item de navegação fora do escopo da entrega: aparece no layout, mas não é
- * clicável nem aparenta funcionar. Leitores de tela anunciam que está indisponível.
+ * Item de navegação fora do escopo da entrega: aparece no layout com a cor dos demais, mas
+ * não é clicável (cursor bloqueado). Leitores de tela anunciam que está indisponível.
  */
 export function UnavailableLink({
   children,
@@ -19,7 +19,7 @@ export function UnavailableLink({
       role="link"
       aria-disabled="true"
       title={UNAVAILABLE_HINT}
-      className={cn('cursor-not-allowed opacity-50', className)}
+      className={cn('cursor-not-allowed', className)}
     >
       {children}
       <span className="sr-only"> ({UNAVAILABLE_HINT.toLowerCase()})</span>
