@@ -7,7 +7,7 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default defineConfig([
-  globalIgnores(['dist', 'coverage']),
+  globalIgnores(['dist', 'coverage', 'src/routeTree.gen.ts']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -23,8 +23,9 @@ export default defineConfig([
     },
   },
   {
-    // Componentes gerados pelo shadcn/ui exportam variantes junto com o componente
-    files: ['src/components/ui/**/*.tsx'],
+    // shadcn/ui exporta variantes junto com o componente e as rotas exportam `Route`
+    // (o plugin do router faz o code splitting dos componentes de rota)
+    files: ['src/components/ui/**/*.tsx', 'src/routes/**/*.tsx'],
     rules: {
       'react-refresh/only-export-components': 'off',
     },
