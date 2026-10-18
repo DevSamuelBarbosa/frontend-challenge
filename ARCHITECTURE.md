@@ -198,3 +198,10 @@ Onde o design e os requisitos do desafio conflitam ou o design é ambíguo, a de
 - Em "Carteiras", Nome de exibição, E-mail e Nome ENS aparecem só para leitura, com o aviso para editar em Dados do perfil, para existir uma única fonte desses dados. Os dados de colecionador próprios da carteira (nome do perfil, código de indicação e ENS ou carteira secundária de entrega) foram acrescentados ao contrato de carteira.
 - "Rede" é um grupo de seleção (uma carteira pode ter várias redes), no lugar do seletor do design, que só permitiria uma. "Igual à carteira principal" é uma preferência só da tela: a API não permite duas carteiras com o mesmo endereço.
 - O nome ENS é editado com o seletor ".eth" do design e é sempre validado como nome completo (`ana.eth`), com a mesma regra do pagamento.
+
+**Estados de 404, erro e vazio**
+
+- Todos usam o mesmo painel (`StatePanel`): código ou ícone, título, texto de apoio e as ações de saída. Não há frames no Figma para eles, então seguem o visual do site (fundo de card, destaque laranja, botão principal).
+- 404 (`NotFound`): rota inexistente, NFT e pedido não encontrados. Pedido de outro usuário também cai aqui, de propósito, para não revelar que ele existe.
+- Erro inesperado de renderização ou de carregamento da rota (`RouteError`, `defaultErrorComponent`): o header e o rodapé continuam no ar, e "Tentar novamente" refaz o carregamento da rota.
+- Falha de dados em uma seção (`QueryError`): catálogo, NFT, carrinho, perfil, carteiras e lista de interesse mostram a mensagem da API e a nova tentativa, sem derrubar o resto da tela. Estados vazios (carrinho, pagamento, favoritos, busca sem resultado) levam a uma ação útil.

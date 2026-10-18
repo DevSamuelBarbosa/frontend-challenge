@@ -4,6 +4,9 @@ import { AccountLayout } from '@/features/account/components/account-layout'
 import { NftCard, NftCardSkeleton } from '@/features/catalog/components/nft-card'
 import { useDocumentTitle } from '@/hooks/use-document-title'
 import { favoritesQueryOptions } from '@/queries/favorites'
+import { QueryError } from '@/components/query-error'
+import { StatePanel, stateActionClass } from '@/components/state-panel'
+import { Heart } from 'lucide-react'
 
 export const Route = createFileRoute('/_authenticated/favorites')({
   component: FavoritesPage,
@@ -11,7 +14,9 @@ export const Route = createFileRoute('/_authenticated/favorites')({
 
 function FavoritesPage() {
   const { session } = Route.useRouteContext()
-  const { data, isPending, isError, refetch } = useQuery(favoritesQueryOptions(session.user.id))
+  const { data, isPending, isError, error, refetch } = useQuery(
+    favoritesQueryOptions(session.user.id),
+  )
   useDocumentTitle('Lista de interesse')
 
   return (
@@ -32,27 +37,21 @@ function FavoritesPage() {
             ))}
           </ul>
         ) : isError ? (
-          <div role="alert" className="text-sm">
-            <p>Não foi possível carregar sua lista de interesse.</p>
-            <button
-              type="button"
-              onClick={() => void refetch()}
-              className="mt-2 font-bold text-highlight underline underline-offset-2"
-            >
-              Tentar novamente
-            </button>
-          </div>
+          <QueryError
+            subject="sua lista de interesse"
+            message={error.message}
+            onRetry={() => void refetch()}
+          />
         ) : data.items.length === 0 ? (
-          <div className="text-sm">
-            <p>Você ainda não favoritou nenhum NFT.</p>
-            <Link
-              to="/"
-              hash="mercado"
-              className="mt-2 inline-block font-bold text-highlight underline underline-offset-2"
-            >
+          <StatePanel
+            icon={Heart}
+            title="Você ainda não favoritou nenhum NFT"
+            description="Toque no coração de um NFT para guardá-lo aqui e acompanhar o preço."
+          >
+            <Link to="/" hash="mercado" className={stateActionClass}>
               Explorar o mercado
             </Link>
-          </div>
+          </StatePanel>
         ) : (
           <ul className="grid grid-cols-2 gap-4 lg:grid-cols-3">
             {data.items.map((nft) => (

@@ -6,6 +6,7 @@ import { ProfileForm } from '@/features/account/components/profile-form'
 import { useDocumentTitle } from '@/hooks/use-document-title'
 import { profileQueryOptions } from '@/queries/profile'
 import { walletsQueryOptions } from '@/queries/wallets'
+import { QueryError } from '@/components/query-error'
 
 export const Route = createFileRoute('/_authenticated/profile')({
   component: ProfilePage,
@@ -32,16 +33,7 @@ function ProfilePage() {
         {loading && !failed ? (
           <ProfileSkeleton />
         ) : failed || !profile.data ? (
-          <div role="alert" className="text-sm">
-            <p>Não foi possível carregar seu perfil.</p>
-            <button
-              type="button"
-              onClick={retry}
-              className="mt-2 font-bold text-highlight underline underline-offset-2"
-            >
-              Tentar novamente
-            </button>
-          </div>
+          <QueryError subject="seu perfil" onRetry={retry} />
         ) : (
           <ProfileForm
             profile={profile.data}

@@ -7,6 +7,7 @@ import { WalletForm } from '@/features/account/components/wallet-form'
 import { useDocumentTitle } from '@/hooks/use-document-title'
 import { profileQueryOptions } from '@/queries/profile'
 import { walletsQueryOptions } from '@/queries/wallets'
+import { QueryError } from '@/components/query-error'
 
 export const Route = createFileRoute('/_authenticated/wallets')({
   component: WalletsPage,
@@ -28,19 +29,13 @@ function WalletsPage() {
   return (
     <AccountLayout section="wallets">
       {profile.isError || wallets.isError ? (
-        <div role="alert" className="text-sm">
-          <p>Não foi possível carregar suas carteiras.</p>
-          <button
-            type="button"
-            onClick={() => {
-              void profile.refetch()
-              void wallets.refetch()
-            }}
-            className="mt-2 font-bold text-highlight underline underline-offset-2"
-          >
-            Tentar novamente
-          </button>
-        </div>
+        <QueryError
+          subject="suas carteiras"
+          onRetry={() => {
+            void profile.refetch()
+            void wallets.refetch()
+          }}
+        />
       ) : !profile.data || !wallets.data ? (
         <div aria-busy="true" aria-label="Carregando carteiras" className="flex flex-col gap-6">
           <Skeleton className="h-6 w-60" />

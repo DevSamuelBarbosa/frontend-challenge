@@ -17,6 +17,9 @@ import { FeedTabs, SortSelect } from './catalog-toolbar'
 import { FeaturedCard } from './featured-card'
 import { NftCard, NftCardSkeleton } from './nft-card'
 import { Pagination } from './pagination'
+import { QueryError } from '@/components/query-error'
+import { StatePanel, stateActionClass } from '@/components/state-panel'
+import { SearchX } from 'lucide-react'
 
 /** Atraso da busca digitada no mobile, para não consultar a cada tecla */
 const SEARCH_DEBOUNCE_MS = 350
@@ -89,33 +92,25 @@ export function CatalogSection({
           </p>
 
           {status === 'error' ? (
-            <div role="alert" className="mt-12 flex flex-col items-start gap-4 bg-card p-6">
-              <p className="font-bold">Não foi possível carregar o catálogo.</p>
-              <p className="text-sm text-muted-foreground">{error.message}</p>
-              <button
-                type="button"
-                onClick={() => void refetch()}
-                className="rounded-md bg-primary px-4 py-2 font-bold text-primary-foreground"
-              >
-                Tentar novamente
-              </button>
-            </div>
+            <QueryError
+              subject="o catálogo"
+              message={error.message}
+              onRetry={() => void refetch()}
+              className="mt-12"
+            />
           ) : status === 'success' && data.items.length === 0 ? (
-            <div className="mt-12 flex flex-col items-start gap-4 bg-card p-6">
-              <p className="font-bold">Nenhum NFT encontrado.</p>
-              <p className="text-sm text-muted-foreground">
-                Tente outra busca ou remova alguns filtros.
-              </p>
+            <StatePanel
+              icon={SearchX}
+              title="Nenhum NFT encontrado"
+              description="Tente outra busca ou remova alguns filtros."
+              className="mt-12"
+            >
               {hasFilters && (
-                <button
-                  type="button"
-                  onClick={onClearFilters}
-                  className="rounded-md bg-primary px-4 py-2 font-bold text-primary-foreground"
-                >
+                <button type="button" onClick={onClearFilters} className={stateActionClass}>
                   Limpar filtros
                 </button>
               )}
-            </div>
+            </StatePanel>
           ) : (
             <ul
               aria-busy={status === 'pending' || updating}

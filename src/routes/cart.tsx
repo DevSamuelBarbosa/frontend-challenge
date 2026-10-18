@@ -11,6 +11,9 @@ import { useCartSummary } from '@/features/cart/use-cart-summary'
 import { useDocumentTitle } from '@/hooks/use-document-title'
 import { useIsDesktop } from '@/hooks/use-media-query'
 import { useCart } from '@/queries/cart'
+import { QueryError } from '@/components/query-error'
+import { StatePanel, stateActionClass } from '@/components/state-panel'
+import { ShoppingCart } from 'lucide-react'
 
 export const Route = createFileRoute('/cart')({
   component: CartPage,
@@ -88,16 +91,12 @@ function CartPage() {
       </div>
 
       {cart.query.isError && !cart.cart ? (
-        <div role="alert" className="mt-8 flex flex-col items-start gap-3">
-          <p className="font-bold">Não foi possível carregar o carrinho.</p>
-          <button
-            type="button"
-            onClick={() => void cart.query.refetch()}
-            className="rounded-md bg-primary px-4 py-2 font-bold text-primary-foreground"
-          >
-            Tentar novamente
-          </button>
-        </div>
+        <QueryError
+          subject="o carrinho"
+          message={cart.query.error.message}
+          onRetry={() => void cart.query.refetch()}
+          className="mt-8"
+        />
       ) : cart.isPending ? (
         <div className={layoutClass}>
           <div className="min-w-0">
@@ -112,19 +111,16 @@ function CartPage() {
           )}
         </div>
       ) : items.length === 0 ? (
-        <div className="mt-12 flex flex-col items-center gap-4 text-center">
-          <p className="text-lg font-bold">Seu carrinho está vazio.</p>
-          <p className="text-sm text-muted-foreground">
-            Explore o mercado e adicione os NFTs que quiser colecionar.
-          </p>
-          <Link
-            to="/"
-            hash="mercado"
-            className="grid h-10 place-items-center rounded-md bg-primary px-6 font-bold text-primary-foreground"
-          >
+        <StatePanel
+          icon={ShoppingCart}
+          title="Seu carrinho está vazio"
+          description="Explore o mercado e adicione os NFTs que quiser colecionar."
+          className="mt-12"
+        >
+          <Link to="/" hash="mercado" className={stateActionClass}>
             Explorar NFTs
           </Link>
-        </div>
+        </StatePanel>
       ) : (
         <div className={layoutClass}>
           <div className="min-w-0">

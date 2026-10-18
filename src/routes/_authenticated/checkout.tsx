@@ -10,6 +10,8 @@ import { useIsDesktop } from '@/hooks/use-media-query'
 import { formatEth } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { useCart } from '@/queries/cart'
+import { StatePanel, stateActionClass } from '@/components/state-panel'
+import { ShoppingCart } from 'lucide-react'
 
 export const Route = createFileRoute('/_authenticated/checkout')({
   component: CheckoutPage,
@@ -25,19 +27,17 @@ function CheckoutPage() {
 
   if (emptyCart) {
     return (
-      <div className="page-container flex flex-col items-center gap-4 py-24 text-center">
-        <h1 className="text-xl font-bold">Seu carrinho está vazio</h1>
-        <p className="text-sm text-muted-foreground">
-          Adicione NFTs ao carrinho para seguir para o pagamento.
-        </p>
-        <Link
-          to="/"
-          hash="mercado"
-          className="grid h-10 place-items-center rounded-md bg-primary px-6 font-bold text-primary-foreground"
-        >
+      <StatePanel
+        icon={ShoppingCart}
+        title="Seu carrinho está vazio"
+        description="Adicione NFTs ao carrinho para seguir para o pagamento."
+        as="h1"
+        size="page"
+      >
+        <Link to="/" hash="mercado" className={stateActionClass}>
           Explorar NFTs
         </Link>
-      </div>
+      </StatePanel>
     )
   }
 
