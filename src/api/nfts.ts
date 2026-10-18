@@ -6,7 +6,7 @@ export async function listNfts(params: NftListParams, signal?: AbortSignal): Pro
   const { data } = await api.get('/nfts', {
     params,
     signal,
-    // Arrays como `category=art&category=music` (o padrão do Axios seria `category[]=`)
+    // Arrays como `category=music&category=games` (o padrão do Axios seria `category[]=`)
     paramsSerializer: { indexes: null },
   })
   return parseResponse(nftListSchema, data)

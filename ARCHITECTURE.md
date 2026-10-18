@@ -142,4 +142,5 @@ Todo evento tem `id` estável (`<recurso>:<id>:v<versão>`), recurso e versão, 
 - **Ordem de carregamento:** o transporte WebSocket do engine.io guarda a referência do `WebSocket` global ao ser importado. Por isso `main.tsx` inicia os mocks antes de importar a aplicação. O CSS é importado na entrada para não atrasar a primeira pintura.
 - **Links de exploração:** seguem o formato dos exploradores reais, mas o hash é simulado. A interface sinaliza que a referência é simulada.
 - **`npm audit`:** os alertas "high" vêm do CLI do `shadcn` (dependência de desenvolvimento, fora do bundle).
-- **Imagens provisórias:** as artes e avatares em `public/images` são SVGs gerados por script, até a troca pelos assets do Figma.
+- **Imagens dos NFTs**: os 4 assets do Figma (PNG 1254×1254, ~2 MB cada) foram convertidos para WebP em 240, 480 e 960 px (308 KB no total) e servidos com `srcset`, para não pesar no carregamento. Os 36 NFTs do catálogo reutilizam essas 4 artes. Os avatares de criadores e usuários seguem como SVGs gerados, pois o design não traz esses assets.
+- **Dados alinhados ao design**: coleções, redes (Ethereum, Polygon e Solana), preço anterior riscado, selo RARO, avaliações e edições 1/1, 1/10, 1/50 e aberta seguem o Figma. Os 9 primeiros NFTs reproduzem nomes, preços e ordem da tela inicial.

@@ -45,9 +45,16 @@ export const nftUpdatedEventSchema = eventSchema(
     nftId: idSchema,
     /** Menor preço e disponibilidade total, como no resumo do catálogo */
     priceEth: ethAmountSchema,
+    compareAtPriceEth: ethAmountSchema.nullable(),
     available: z.number().int().nonnegative(),
     editions: z.array(
-      nftEditionSchema.pick({ id: true, priceEth: true, available: true, maxPerOrder: true }),
+      nftEditionSchema.pick({
+        id: true,
+        priceEth: true,
+        compareAtPriceEth: true,
+        available: true,
+        maxPerOrder: true,
+      }),
     ),
   }),
 )

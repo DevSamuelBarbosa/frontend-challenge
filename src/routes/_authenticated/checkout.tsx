@@ -6,7 +6,7 @@ export const Route = createFileRoute('/_authenticated/checkout')({
   component: CheckoutPage,
 })
 
-const NETWORKS: Network[] = ['ethereum', 'polygon', 'base']
+const NETWORKS: Network[] = ['ethereum', 'polygon', 'solana']
 
 // Renderização provisória: a tela do Figma substitui este conteúdo
 function CheckoutPage() {

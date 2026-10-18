@@ -29,6 +29,7 @@ function patchSummary(item: NftSummary, event: NftUpdatedEvent): NftSummary {
   return {
     ...item,
     priceEth: event.data.priceEth,
+    compareAtPriceEth: event.data.compareAtPriceEth,
     available: event.data.available,
     version: event.version,
   }
@@ -103,8 +104,8 @@ export function applyNftUpdated(queryClient: QueryClient, event: NftUpdatedEvent
 
 function pickEdition(update: EditionUpdate | undefined) {
   if (!update) return {}
-  const { priceEth, available, maxPerOrder } = update
-  return { priceEth, available, maxPerOrder }
+  const { priceEth, compareAtPriceEth, available, maxPerOrder } = update
+  return { priceEth, compareAtPriceEth, available, maxPerOrder }
 }
 
 function isCartQuery(query: { queryKey: readonly unknown[] }) {

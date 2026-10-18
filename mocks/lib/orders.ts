@@ -22,7 +22,7 @@ export function notifyOrderChanged(order: MockOrder) {
 const EXPLORERS: Record<Network, string> = {
   ethereum: 'https://etherscan.io/tx/',
   polygon: 'https://polygonscan.com/tx/',
-  base: 'https://basescan.org/tx/',
+  solana: 'https://solscan.io/tx/',
 }
 
 /** Valida contra o contrato e remove os campos internos do pedido antes de responder */

@@ -1,17 +1,24 @@
 import type { Nft, NftEdition, NftSummary } from '@/api/contracts'
-import { minEth } from '@/lib/eth'
+import { compareEth } from '@/lib/eth'
 
-/** Resumo do NFT para cards: menor preço entre as edições disponíveis */
+/**
+ * Resumo do NFT para cards: preço da edição mais barata entre as disponíveis
+ * (ou entre todas, se esgotado), com o preço anterior dessa edição, se houver.
+ */
 export function toNftSummary(nft: Nft): NftSummary {
   const available = nft.editions.filter((e) => e.available > 0)
   const priced = available.length > 0 ? available : nft.editions
+  const cheapest = priced.reduce((min, e) => (compareEth(e.priceEth, min.priceEth) < 0 ? e : min))
   return {
     id: nft.id,
     name: nft.name,
     category: nft.category,
+    network: nft.network,
+    rarity: nft.rarity,
     creator: nft.creator,
     image: nft.images[0],
-    priceEth: minEth(priced.map((e) => e.priceEth)),
+    priceEth: cheapest.priceEth,
+    compareAtPriceEth: cheapest.compareAtPriceEth,
     available: nft.editions.reduce((total, e) => total + e.available, 0),
     favoritesCount: nft.favoritesCount,
     version: nft.version,

@@ -17,7 +17,7 @@ const MAX_QUOTES_PER_USER = 20
 const NETWORK_FEES: Record<Network, { base: EthAmount; perLine: EthAmount }> = {
   ethereum: { base: '0.0025', perLine: '0.0005' },
   polygon: { base: '0.00008', perLine: '0.00001' },
-  base: { base: '0.0003', perLine: '0.00005' },
+  solana: { base: '0.00002', perLine: '0.000005' },
 }
 
 export function networkFee(network: Network, lines: number): EthAmount {

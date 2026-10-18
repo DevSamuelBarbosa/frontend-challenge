@@ -13,16 +13,19 @@ export const isoDateSchema = z.iso.datetime({ offset: true })
 /** Quantidades são sempre inteiras e positivas */
 export const quantitySchema = z.number().int().positive()
 
-export const networkSchema = z.enum(['ethereum', 'polygon', 'base'], {
+export const networkSchema = z.enum(['ethereum', 'polygon', 'solana'], {
   error: 'Selecione uma rede válida',
 })
 export type Network = z.infer<typeof networkSchema>
 
 export const imageSchema = z.object({
+  /** Versão padrão, usada quando o navegador não escolhe pelo `srcset` */
   url: z.string(),
   alt: z.string(),
   width: z.number().int().positive(),
   height: z.number().int().positive(),
+  /** Mesma imagem em outras larguras, para `srcset` */
+  variants: z.array(z.object({ url: z.string(), width: z.number().int().positive() })).default([]),
 })
 export type Image = z.infer<typeof imageSchema>
 

@@ -99,10 +99,12 @@ export function toNftUpdatedEvent(nft: Nft): NftUpdatedEvent {
     data: {
       nftId: nft.id,
       priceEth: summary.priceEth,
+      compareAtPriceEth: summary.compareAtPriceEth,
       available: summary.available,
-      editions: nft.editions.map(({ id, priceEth, available, maxPerOrder }) => ({
+      editions: nft.editions.map(({ id, priceEth, compareAtPriceEth, available, maxPerOrder }) => ({
         id,
         priceEth,
+        compareAtPriceEth,
         available,
         maxPerOrder,
       })),
