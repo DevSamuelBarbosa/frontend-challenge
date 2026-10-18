@@ -780,7 +780,7 @@
             "entity": "localhost"
           },
           {
-            "url": "http://localhost:4180/favicon.svg",
+            "url": "http://localhost:4180/favicon.png",
             "sessionTargetType": "page",
             "protocol": "http/1.1",
             "cache": "none",
@@ -3474,7 +3474,7 @@
             "totalBytes": 15009
           },
           {
-            "url": "http://localhost:4180/favicon.svg",
+            "url": "http://localhost:4180/favicon.png",
             "totalBytes": 1806
           },
           {
