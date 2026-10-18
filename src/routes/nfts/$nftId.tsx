@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { isApiError } from '@/api/errors'
 import { NotFound } from '@/components/not-found'
+import { useFavorites } from '@/queries/favorites'
 import { nftQueryOptions } from '@/queries/nfts'
 
 export const Route = createFileRoute('/nfts/$nftId')({
@@ -14,6 +15,8 @@ export const Route = createFileRoute('/nfts/$nftId')({
 function NftDetailPage() {
   const { nftId } = Route.useParams()
   const { data: nft, status, error } = useQuery(nftQueryOptions(nftId))
+  const { isFavorite, toggle, mutation } = useFavorites()
+  const favorite = isFavorite(nftId)
 
   if (isApiError(error) && error.code === 'not_found') {
     return (
@@ -32,6 +35,15 @@ function NftDetailPage() {
         {status === 'pending' && 'Carregando…'}
         {status === 'error' && `Erro: ${error.message}`}
       </p>
+      {nft && (
+        <p>
+          <button type="button" aria-pressed={favorite} onClick={() => toggle(nftId)}>
+            {favorite ? 'Remover dos favoritos' : 'Favoritar'}
+          </button>{' '}
+          {nft.favoritesCount} favoritos
+          {mutation.isError && <span role="alert"> Não foi possível salvar o favorito.</span>}
+        </p>
+      )}
       {nft && (
         <ul>
           {nft.editions.map((edition) => (
