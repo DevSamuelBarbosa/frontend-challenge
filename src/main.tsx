@@ -3,6 +3,7 @@ import { RouterProvider } from '@tanstack/react-router'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { queryClient } from '@/lib/query-client'
+import { syncSessionWithToken } from '@/queries/session'
 import { router } from './router'
 import './index.css'
 
@@ -14,6 +15,7 @@ async function enableMocking() {
 }
 
 enableMocking().then(() => {
+  syncSessionWithToken(queryClient)
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
