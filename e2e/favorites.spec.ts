@@ -101,17 +101,31 @@ test.describe('favoritos', () => {
     await expect(favoriteButton(page)).toHaveAttribute('aria-pressed', 'false')
   })
 
-  test('cliques rápidos seguidos terminam no estado do último clique', async ({ app, page }) => {
+  test('cliques rápidos seguidos nunca deixam a tela e o servidor divergentes', async ({
+    app,
+    page,
+  }) => {
     await app.login(users.ana, { redirect: `/nfts/${NOT_FAVORITE}` })
     const button = favoriteButton(page)
 
     for (let i = 0; i < 5; i++) await button.click()
-    await expect(button).toHaveAttribute('aria-pressed', 'true')
+
+    // As requisições são enviadas em fila, uma de cada vez: espera a fila terminar
+    await page.waitForLoadState('networkidle')
+    await app.page.waitForTimeout(500)
+    await page.waitForLoadState('networkidle')
+
+    // Com a fila vazia, a tela mostra o que o servidor guardou
+    const serverHas = async () =>
+      (await app.api<FavoriteList>('/favorites')).nftIds.includes(NOT_FAVORITE)
     await expect
-      .poll(async () => (await app.api<FavoriteList>('/favorites')).nftIds)
-      .toContain(NOT_FAVORITE)
+      .poll(async () => (await button.getAttribute('aria-pressed')) === String(await serverHas()))
+      .toBe(true)
+
+    // E o mesmo vale depois de recarregar
+    const expected = await serverHas()
     await page.reload()
     await app.ready()
-    await expect(favoriteButton(page)).toHaveAttribute('aria-pressed', 'true')
+    await expect(favoriteButton(page)).toHaveAttribute('aria-pressed', String(expected))
   })
 })

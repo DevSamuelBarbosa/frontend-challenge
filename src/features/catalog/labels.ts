@@ -1,6 +1,7 @@
 import type { Network, NftCategory, NftFeed, NftSort } from '@/api/contracts'
+import { nftCategorySchema } from '@/api/contracts'
 
-/** Nomes exibidos das coleções, na ordem do filtro do design */
+/** Nomes exibidos das coleções */
 export const CATEGORY_LABELS: Record<NftCategory, string> = {
   digital_art: 'Arte digital',
   photography: 'Fotografia',
@@ -12,6 +13,11 @@ export const CATEGORY_LABELS: Record<NftCategory, string> = {
   subscriptions: 'Assinaturas',
   utility: 'Utilidade',
 }
+
+/** Coleções em ordem alfabética (pt-BR), para as listas de filtro e de links */
+export const CATEGORIES_ALPHABETICAL = [...nftCategorySchema.options].sort((a, b) =>
+  CATEGORY_LABELS[a].localeCompare(CATEGORY_LABELS[b], 'pt-BR'),
+)
 
 export const NETWORK_LABELS: Record<Network, string> = {
   ethereum: 'Ethereum',

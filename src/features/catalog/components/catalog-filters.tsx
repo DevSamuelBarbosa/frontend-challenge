@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import type { EthAmount, Network, NftCategory, NftFacets } from '@/api/contracts'
-import { nftCategorySchema, networkSchema } from '@/api/contracts'
+import { networkSchema } from '@/api/contracts'
 import { Slider } from '@/components/ui/slider'
 import { formatPriceRange } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { CATEGORY_LABELS, NETWORK_LABELS } from '../labels'
+import { CATEGORIES_ALPHABETICAL, CATEGORY_LABELS, NETWORK_LABELS } from '../labels'
 import type { CatalogSearch } from '../search'
 
 interface CatalogFiltersProps {
@@ -18,7 +18,7 @@ export function CatalogFilters({ search, facets, onChange }: CatalogFiltersProps
   return (
     <div className="flex flex-col gap-8">
       <FilterGroup title="Coleções">
-        {nftCategorySchema.options.map((category) => (
+        {CATEGORIES_ALPHABETICAL.map((category) => (
           <FilterOption
             key={category}
             label={CATEGORY_LABELS[category]}

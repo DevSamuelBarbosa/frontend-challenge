@@ -9,6 +9,7 @@ import {
   YoutubeIcon,
 } from '@/components/icons/social-icons'
 import { UnavailableButton, UnavailableLink } from '@/components/unavailable'
+import { CATEGORIES_ALPHABETICAL, CATEGORY_LABELS } from '@/features/catalog/labels'
 import { cn } from '@/lib/utils'
 import { useHasBuyBar, useIsAuthRoute } from './navigation'
 
@@ -30,13 +31,16 @@ const FEATURES = [
   },
 ]
 
-const COLLECTION_LINKS: { label: string; category: NftCategory }[] = [
-  { label: 'Arte digital', category: 'digital_art' },
-  { label: 'Fotografia', category: 'photography' },
-  { label: 'Música', category: 'music' },
-  { label: 'Arte 3D', category: 'art_3d' },
-  { label: 'Utilidade', category: 'utility' },
+const FOOTER_CATEGORIES: NftCategory[] = [
+  'digital_art',
+  'photography',
+  'music',
+  'art_3d',
+  'utility',
 ]
+const COLLECTION_LINKS = CATEGORIES_ALPHABETICAL.filter((category) =>
+  FOOTER_CATEGORIES.includes(category),
+).map((category) => ({ label: CATEGORY_LABELS[category], category }))
 
 const SOCIAL: { label: string; Icon: ComponentType<SVGProps<SVGSVGElement>> }[] = [
   { label: 'Facebook', Icon: FacebookIcon },
