@@ -90,6 +90,36 @@
   body {
     @apply bg-background font-sans text-foreground;
   }
+  /*
+   * Tudo que é clicável mostra o cursor de mão. O reset do Tailwind v4 remove o cursor
+   * dos botões, então a regra fica aqui, em um só lugar, em vez de em cada componente.
+   * Itens desabilitados mostram "não permitido".
+   */
+  a[href],
+  button:not(:disabled),
+  summary,
+  select:not(:disabled),
+  label:has(input:is([type='radio'], [type='checkbox']):not(:disabled)),
+  input:is([type='radio'], [type='checkbox'], [type='submit'], [type='button']):not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  [role='tab']:not([aria-disabled='true']),
+  [role='option']:not([aria-disabled='true']),
+  [role='menuitem']:not([aria-disabled='true']),
+  [role='link']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+  button:disabled,
+  [aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+  /* Controle de faixa de preço: as alças são arrastadas */
+  [role='slider'] {
+    cursor: grab;
+  }
+  [role='slider']:active {
+    cursor: grabbing;
+  }
+
   /* Foco sempre visível para navegação por teclado */
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
