@@ -69,6 +69,31 @@ export class App {
     ) as Promise<T>
   }
 
+  /**
+   * Espera a conexão em tempo real (Socket.IO) estar aberta no servidor simulado. Com
+   * `userId`, espera a conexão autenticada desse usuário (eventos privados de pedido).
+   */
+  async waitRealtime(userId?: string) {
+    await expect
+      .poll(() =>
+        this.mocks(
+          (mocks, id) => mocks.realtime.connections().some((c) => (id ? c.userId === id : true)),
+          userId,
+        ),
+      )
+      .toBe(true)
+  }
+
+  /** Registra as requisições REST que casam com o padrão, para provar que não houve refetch */
+  recordRequests(pattern: RegExp) {
+    const seen: string[] = []
+    this.page.on('request', (request) => {
+      const url = new URL(request.url())
+      if (request.method() === 'GET' && pattern.test(url.pathname)) seen.push(url.pathname)
+    })
+    return seen
+  }
+
   /** Projeto mobile (barra inferior, filtros na gaveta) ou desktop */
   get isMobile() {
     return (this.page.viewportSize()?.width ?? 1440) < 768
