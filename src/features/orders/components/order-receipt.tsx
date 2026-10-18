@@ -2,7 +2,6 @@ import { Copy } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Network, Order } from '@/api/contracts'
 import { NftImage } from '@/components/nft-image'
-import { DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { PROVIDER_LABELS } from '@/features/checkout/form-schema'
 import { NETWORK_LABELS } from '@/features/catalog/labels'
 import { formatEth, formatReceiptDate, shortHash } from '@/lib/format'
@@ -36,12 +35,12 @@ export function OrderReceipt({ order }: { order: Order }) {
     <>
       <header className="px-6 pt-8 pb-5 text-center">
         <ThankYouIcon className="mx-auto h-[5.125rem] w-16 text-primary" />
-        <DialogTitle className="mt-4 text-base font-bold text-muted-foreground">
+        <h1 className="mt-4 text-base font-bold text-muted-foreground">
           Seus NFTs agora estão na sua carteira
-        </DialogTitle>
-        <DialogDescription className="sr-only">
+        </h1>
+        <p className="sr-only">
           Recibo do pedido {order.id}, confirmado em {formatReceiptDate(order.updatedAt)}.
-        </DialogDescription>
+        </p>
       </header>
 
       <dl className="grid grid-cols-2 gap-y-4 border-y border-primary px-6 py-3.5 text-sm sm:grid-cols-[1.35fr_1.15fr_1fr_0.9fr] sm:gap-y-0">

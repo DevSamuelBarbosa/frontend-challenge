@@ -165,7 +165,7 @@ Onde o design e os requisitos do desafio conflitam ou o design é ambíguo, a de
 
 **Confirmação do pedido**
 
-- O frame existe só no desktop (um modal). A rota `/orders/:id` abre o recibo em um diálogo no desktop e em **tela cheia** no celular, sem frame. Fechar (X ou Esc) leva ao início.
+- O frame do desktop é um modal, mas a confirmação é uma página normal (decisão posterior): o recibo fica num painel centralizado, em desktop e celular, com o botão "Voltar para a tela inicial" no lugar do X de fechar. A rota `/orders/:id` funciona com acesso direto e refresh.
 - O recibo só aparece para pedido **confirmado**. Pendente mostra "Pagamento pendente" e muda sozinho para o recibo (consulta periódica e evento `order.updated`); recusado mostra o motivo e volta ao carrinho.
 - Itens, valores, carteira e colecionador vêm do snapshot gravado no pedido. As linhas da cotação guardam também a imagem e o ID do token, então o recibo não muda se o catálogo mudar. Um pedido de outro usuário responde 404.
 - Acrescentado ao design: botão para copiar o ID da transação, o rótulo "Referência simulada" junto ao link de exploração e, com cupom, as linhas de subtotal e desconto. O texto do link acompanha a rede (Etherscan, Polygonscan ou Solscan).
