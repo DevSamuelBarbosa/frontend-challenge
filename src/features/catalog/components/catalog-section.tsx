@@ -126,12 +126,12 @@ export function CatalogSection({
             >
               {status === 'pending'
                 ? Array.from({ length: CATALOG_PAGE_SIZE }, (_, i) => (
-                    <li key={i} className={staggered(i)}>
+                    <li key={i}>
                       <NftCardSkeleton />
                     </li>
                   ))
                 : data.items.map((nft, i) => (
-                    <li key={nft.id} className={staggered(i)}>
+                    <li key={nft.id}>
                       <NftCard nft={nft} priority={i < 3} />
                     </li>
                   ))}
@@ -148,9 +148,6 @@ export function CatalogSection({
     </section>
   )
 }
-
-/** No mobile, a coluna da direita desce um pouco, como no design */
-const staggered = (index: number) => (index % 2 === 1 ? 'max-md:translate-y-8' : undefined)
 
 /** Busca e filtros do mobile e tablet: os filtros abrem em uma gaveta */
 export function CatalogSearchBar({

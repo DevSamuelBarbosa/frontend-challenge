@@ -2,6 +2,7 @@ import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
 import { useCallback } from 'react'
 import { CatalogSearchBar, CatalogSection } from '@/features/catalog/components/catalog-section'
 import { Hero } from '@/features/catalog/components/hero'
+import { MintingJournal, PromoBanners } from '@/features/home/components/editorial-sections'
 import {
   applyCatalogChange,
   type CatalogSearch,
@@ -61,6 +62,8 @@ function HomePage() {
         onPageChange={onPageChange}
         onClearFilters={onClearFilters}
       />
+      <PromoBanners />
+      <MintingJournal />
     </>
   )
 }

@@ -40,7 +40,7 @@ export function NftCard({ nft, priority }: NftCardProps) {
   }
 
   return (
-    <article className="group relative rounded-3xl bg-card p-1.5 pb-4 md:rounded-none md:bg-transparent md:p-0">
+    <article className="group relative flex h-full flex-col rounded-3xl bg-card p-1.5 pb-4 md:block md:h-auto md:rounded-none md:bg-transparent md:p-0">
       <div className="relative rounded-[1.25rem] md:rounded-none md:bg-card md:px-1 md:py-6">
         <NftImage
           image={nft.image}
@@ -61,7 +61,8 @@ export function NftCard({ nft, priority }: NftCardProps) {
         )}
       </div>
 
-      <h3 className="mt-3 truncate px-2 text-base md:px-0">
+      {/* No celular o nome quebra em até duas linhas; a altura dos cards da linha é igualada pela grade */}
+      <h3 className="mt-3 px-2 text-sm leading-snug break-words md:truncate md:px-0 md:text-base">
         <Link
           to="/nfts/$nftId"
           params={{ nftId: nft.id }}
@@ -70,11 +71,11 @@ export function NftCard({ nft, priority }: NftCardProps) {
           {nft.name}
         </Link>
       </h3>
-      <p className="mt-0.5 px-2 text-lg font-bold text-highlight md:px-0">
+      <p className="mt-0.5 px-2 text-base font-bold text-highlight md:px-0 md:text-lg">
         <span className="sr-only">Preço: </span>
         {formatEth(nft.priceEth)}
         {nft.compareAtPriceEth && (
-          <span className="ml-2 font-normal text-muted-foreground line-through">
+          <span className="block font-normal text-muted-foreground line-through md:ml-2 md:inline">
             <span className="sr-only">, antes </span>
             {formatEth(nft.compareAtPriceEth)}
           </span>
@@ -129,7 +130,7 @@ export function NftCard({ nft, priority }: NftCardProps) {
 /** Mesmas dimensões do card, para o layout não se deslocar ao carregar */
 export function NftCardSkeleton() {
   return (
-    <div className="rounded-3xl bg-card p-1.5 pb-4 md:rounded-none md:bg-transparent md:p-0">
+    <div className="h-full rounded-3xl bg-card p-1.5 pb-4 md:h-auto md:rounded-none md:bg-transparent md:p-0">
       <div className="rounded-[1.25rem] md:rounded-none md:bg-card md:px-1 md:py-6">
         <Skeleton className="aspect-square w-full rounded-[1.25rem] bg-band md:rounded-xl" />
       </div>
