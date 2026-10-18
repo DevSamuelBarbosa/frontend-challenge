@@ -17,7 +17,8 @@
     "format:check": "prettier --check .",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:update-visual": "playwright test e2e/visual.spec.ts --update-snapshots"
   },
   "dependencies": {
     "@fontsource-variable/roboto-mono": "^5.3.0",
