@@ -5,6 +5,8 @@ export interface CheckoutDraft {
   network: Network
   walletId: string | null
   couponCode: string | null
+  /** "Usar outra carteira?": os NFTs vão para a carteira ou ENS informado em `collector.secondaryWallet` */
+  deliverToOther: boolean
   collector: Collector
 }
 
@@ -31,13 +33,24 @@ export const emptyCheckoutState = (): CheckoutState => ({
     network: 'ethereum',
     walletId: null,
     couponCode: null,
-    collector: { fullName: '', email: '', country: '' },
+    deliverToOther: false,
+    collector: {
+      displayName: '',
+      username: '',
+      profileName: '',
+      email: '',
+      referralCode: '',
+      ensName: '',
+      secondaryWallet: '',
+      note: '',
+    },
   },
   acceptedQuote: null,
   attempt: null,
 })
 
-const storageKey = (userId: string) => `nft-marketplace:checkout:${userId}`
+// A versão descarta rascunhos salvos em formatos antigos
+const storageKey = (userId: string) => `nft-marketplace:checkout:v2:${userId}`
 
 function storage(): Storage | null {
   try {
@@ -56,7 +69,20 @@ function createStore(userId: string) {
   function load(): CheckoutState {
     try {
       const raw = storage()?.getItem(storageKey(userId))
-      if (raw) return { ...emptyCheckoutState(), ...(JSON.parse(raw) as CheckoutState) }
+      if (raw) {
+        const saved = JSON.parse(raw) as Partial<CheckoutState>
+        const empty = emptyCheckoutState()
+        // Mescla campo a campo: rascunhos antigos sem algum campo novo continuam válidos
+        return {
+          ...empty,
+          ...saved,
+          draft: {
+            ...empty.draft,
+            ...saved.draft,
+            collector: { ...empty.draft.collector, ...saved.draft?.collector },
+          },
+        }
+      }
     } catch {
       // Estado inválido: começa do zero
     }

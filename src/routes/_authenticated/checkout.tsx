@@ -1,134 +1,152 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import type { Network } from '@/api/contracts'
-import { useCheckout } from '@/features/checkout/use-checkout'
+import { MobileBackButton } from '@/components/layout/mobile-back-button'
+import { CheckoutSummary } from '@/features/checkout/components/checkout-summary'
+import { CollectorForm } from '@/features/checkout/components/collector-form'
+import { ReviewDialog } from '@/features/checkout/components/review-dialog'
+import { NetworkPicker, WalletPicker } from '@/features/checkout/components/wallet-picker'
+import { type Checkout, useCheckout } from '@/features/checkout/use-checkout'
+import { useDocumentTitle } from '@/hooks/use-document-title'
+import { useIsDesktop } from '@/hooks/use-media-query'
+import { formatEth } from '@/lib/format'
+import { cn } from '@/lib/utils'
+import { useCart } from '@/queries/cart'
 
 export const Route = createFileRoute('/_authenticated/checkout')({
   component: CheckoutPage,
 })
 
-const NETWORKS: Network[] = ['ethereum', 'polygon', 'solana']
-
-// Renderização provisória: a tela do Figma substitui este conteúdo
 function CheckoutPage() {
+  useDocumentTitle('Pagamento')
   const { session } = Route.useRouteContext()
-  const c = useCheckout(session.user.id)
-  const { draft, quote, order, result } = c
-  const collector = (field: keyof typeof draft.collector) => ({
-    id: `collector-${field}`,
-    value: draft.collector[field],
-    disabled: c.locked,
-    'aria-invalid': Boolean(c.fieldErrors[`collector.${field}`]),
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-      c.updateDraft({ collector: { ...draft.collector, [field]: e.target.value } }),
-  })
+  const checkout = useCheckout(session.user.id)
+  const cart = useCart()
+  const isDesktop = useIsDesktop()
+  const emptyCart = !cart.isPending && cart.items.length === 0 && !checkout.review.open
+
+  if (emptyCart) {
+    return (
+      <div className="page-container flex flex-col items-center gap-4 py-24 text-center">
+        <h1 className="text-xl font-bold">Seu carrinho está vazio</h1>
+        <p className="text-sm text-muted-foreground">
+          Adicione NFTs ao carrinho para seguir para o pagamento.
+        </p>
+        <Link
+          to="/"
+          hash="mercado"
+          className="grid h-10 place-items-center rounded-md bg-primary px-6 font-bold text-primary-foreground"
+        >
+          Explorar NFTs
+        </Link>
+      </div>
+    )
+  }
 
   return (
-    <>
-      <h1 className="text-2xl font-bold">Pagamento</h1>
+    <div className="page-container pt-4">
+      {isDesktop ? (
+        <>
+          <nav aria-label="Trilha de navegação" className="text-base font-bold">
+            <ol className="flex gap-2">
+              <li>
+                <Link to="/" className="hover:text-highlight">
+                  Início
+                </Link>
+              </li>
+              <li aria-hidden>/</li>
+              <li>
+                <Link to="/" hash="mercado" className="hover:text-highlight">
+                  Mercado
+                </Link>
+              </li>
+              <li aria-hidden>/</li>
+              <li aria-current="page">Pagamento</li>
+            </ol>
+          </nav>
+          <h1 className="sr-only">Pagamento</h1>
+        </>
+      ) : (
+        <div className="relative flex items-center justify-center py-1">
+          <MobileBackButton className="absolute left-0" />
+          <h1 className="text-xl font-bold">Pagamento com carteira</h1>
+        </div>
+      )}
 
-      <section aria-label="Dados do colecionador">
-        {(['fullName', 'email', 'country'] as const).map((field) => (
-          <p key={field}>
-            <label htmlFor={`collector-${field}`}>{field}</label> <input {...collector(field)} />{' '}
-            <span role="alert">{c.fieldErrors[`collector.${field}`]}</span>
-          </p>
-        ))}
-      </section>
+      <form
+        onSubmit={checkout.submit}
+        noValidate
+        aria-label="Dados do pedido"
+        className={cn('mt-6', !isDesktop && 'pb-44')}
+      >
+        {isDesktop ? <DesktopLayout checkout={checkout} /> : <MobileLayout checkout={checkout} />}
+      </form>
 
-      <section aria-label="Carteira e rede">
-        <select
-          aria-label="Carteira"
-          value={draft.walletId ?? ''}
-          disabled={c.locked}
-          onChange={(e) => c.updateDraft({ walletId: e.target.value || null })}
-        >
-          <option value="">Selecione a carteira</option>
-          {c.wallets.data?.map((w) => (
-            <option key={w.id} value={w.id}>
-              {w.label} ({w.networks.join(', ')})
-            </option>
-          ))}
-        </select>{' '}
-        <select
-          aria-label="Rede"
-          value={draft.network}
-          disabled={c.locked}
-          onChange={(e) => c.updateDraft({ network: e.target.value as Network })}
-        >
-          {NETWORKS.map((n) => (
-            <option key={n}>{n}</option>
-          ))}
-        </select>{' '}
-        {c.isConnected ? (
-          <button type="button" onClick={() => void c.disconnectWallet()} disabled={c.locked}>
-            Desconectar carteira
-          </button>
-        ) : (
-          <button type="button" onClick={() => void c.connectWallet()} disabled={!draft.walletId}>
-            Conectar carteira
-          </button>
-        )}{' '}
-        <span role="status">{c.isConnected ? 'Carteira conectada' : 'Carteira desconectada'}</span>
-        <span role="alert"> {c.walletError?.message ?? c.fieldErrors.walletId}</span>
-      </section>
+      <ReviewDialog checkout={checkout} />
+    </div>
+  )
+}
 
-      <section aria-label="Cupom">
-        <input
-          aria-label="Cupom"
-          defaultValue={draft.couponCode ?? ''}
-          disabled={c.locked}
-          onBlur={(e) => c.updateDraft({ couponCode: e.target.value.trim() || null })}
-        />{' '}
-        <span role="alert">{quote.data?.couponError?.message}</span>
-      </section>
+function SubmitError({ message }: { message: string | null }) {
+  return message ? (
+    <p role="alert" className="text-center text-sm text-required">
+      {message}
+    </p>
+  ) : null
+}
 
-      <section aria-label="Resumo" aria-live="polite">
-        {quote.status === 'pending' && <p>Calculando…</p>}
-        {quote.status === 'error' && <p role="alert">{quote.error.message}</p>}
-        {quote.data && (
-          <p>
-            Subtotal {quote.data.subtotalEth} · Desconto {quote.data.discountEth} · Taxa{' '}
-            {quote.data.networkFeeEth} · <strong>Total {quote.data.totalEth} ETH</strong>
-            {quote.isFetching && ' · atualizando…'}
-          </p>
-        )}
-        {c.quoteChanged && (
-          <p role="alert">
-            Os valores ou a disponibilidade mudaram desde a revisão.{' '}
-            <button type="button" onClick={() => void c.acceptChanges()}>
-              Revisar novos valores
-            </button>
-          </p>
-        )}
-      </section>
+function ConfirmButton({ checkout, className }: { checkout: Checkout; className?: string }) {
+  return (
+    <button
+      type="submit"
+      disabled={checkout.locked || checkout.preparing}
+      className={cn(
+        'grid place-items-center font-bold text-primary-foreground transition-colors disabled:opacity-60',
+        className,
+      )}
+    >
+      {checkout.preparing ? 'Preparando pedido…' : 'Confirmar compra'}
+    </button>
+  )
+}
 
-      <p>
-        {!c.reviewed && (
-          <button type="button" onClick={() => void c.review()} disabled={c.locked}>
-            Revisar pedido
-          </button>
-        )}{' '}
-        <button type="button" onClick={() => void c.confirm()} disabled={!c.canConfirm}>
-          {c.confirming ? 'Enviando…' : 'Confirmar compra'}
-        </button>
-      </p>
+function DesktopLayout({ checkout }: { checkout: Checkout }) {
+  return (
+    <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,25.5rem)] lg:gap-14">
+      <CollectorForm checkout={checkout} />
+      <div className="flex flex-col gap-8">
+        <CheckoutSummary checkout={checkout} />
+        <WalletPicker checkout={checkout} title="Carteira e rede" />
+        <div className="flex flex-col gap-3">
+          <ConfirmButton
+            checkout={checkout}
+            className="h-11 rounded-md bg-primary hover:bg-primary/90"
+          />
+          <SubmitError message={checkout.submitError} />
+        </div>
+      </div>
+    </div>
+  )
+}
 
-      <section aria-label="Situação do pedido" aria-live="polite">
-        {result?.type === 'changed' && (
-          <p role="alert">Revise os valores atualizados e confirme novamente.</p>
-        )}
-        {result?.type === 'error' && <p role="alert">{result.error.message}</p>}
-        {order.data?.status === 'pending' && <p>Pagamento pendente: aguardando a carteira…</p>}
-        {order.data?.status === 'rejected' && (
-          <p role="alert">
-            Pagamento recusado: {order.data.rejectionReason}. Seus itens continuam no carrinho.{' '}
-            <button type="button" onClick={c.retryAfterRejection}>
-              Tentar novamente
-            </button>
-          </p>
-        )}
-      </section>
-      <Link to="/cart">Voltar ao carrinho</Link>
-    </>
+function MobileLayout({ checkout }: { checkout: Checkout }) {
+  const total = checkout.quote.data?.totalEth
+  return (
+    <div className="flex flex-col gap-8">
+      <WalletPicker checkout={checkout} title="Carteira" />
+      <NetworkPicker checkout={checkout} />
+      <CollectorForm checkout={checkout} />
+      <CheckoutSummary checkout={checkout} />
+
+      <div className="border-divider fixed inset-x-0 bottom-0 z-40 flex flex-col gap-3 rounded-t-[2.5rem] border-t bg-card px-6 pt-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(0,0,0,0.35)]">
+        <p className="flex items-baseline justify-end gap-4" aria-live="polite">
+          <span className="font-bold">Total:</span>
+          <span className="text-xl font-bold text-highlight">{total ? formatEth(total) : '—'}</span>
+        </p>
+        <ConfirmButton
+          checkout={checkout}
+          className="h-14 rounded-full bg-gradient-to-br from-primary to-[#a8683a]"
+        />
+        <SubmitError message={checkout.submitError} />
+      </div>
+    </div>
   )
 }

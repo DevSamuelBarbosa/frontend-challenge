@@ -106,6 +106,8 @@ Regras em `src/features/checkout/controller.ts`, independentes da interface:
 6. **Recusado:** a tentativa é descartada e o carrinho é preservado. Uma nova tentativa usa outra chave.
 7. **Confirmado:** o servidor remove do carrinho apenas as quantidades compradas. O recibo é o snapshot do pedido e não muda se o catálogo mudar.
 
+**Formulário e revisão.** O formulário usa `react-hook-form` com o mesmo esquema zod do contrato do pedido, então cliente e API validam as mesmas regras; os erros que a API devolve voltam para os campos (os caminhos coincidem, ex.: `collector.email`). O rascunho persiste a cada alteração e é pré-preenchido com os dados do perfil sem sobrescrever o que já foi digitado. "Confirmar compra" valida os campos, conecta a carteira (se preciso), refaz a cotação e abre um **diálogo de revisão** com foco preso; nele o usuário confirma o envio. Se preço, disponibilidade, cupom ou taxa mudarem enquanto o diálogo está aberto, ele muda para "Os valores mudaram" e exige nova confirmação; itens esgotados ou reduzidos levam a "Itens indisponíveis" e à volta ao carrinho. O mesmo diálogo acompanha o pedido pendente (não fecha com Esc) e a recusa; depois de um refresh, ele reabre e retoma a mesma tentativa.
+
 O estado do pagamento (rascunho, valores aceitos e tentativa) fica no `localStorage` por usuário e sobrevive a refresh, reconexão e expiração da sessão.
 
 ## Tempo real
@@ -147,3 +149,29 @@ Todo evento tem `id` estável (`<recurso>:<id>:v<versão>`), recurso e versão, 
 - **`npm audit`:** os alertas "high" vêm do CLI do `shadcn` (dependência de desenvolvimento, fora do bundle).
 - **Imagens dos NFTs**: os 4 assets do Figma (PNG 1254×1254, ~2 MB cada) foram convertidos para WebP em 240, 480 e 960 px (308 KB no total) e servidos com `srcset`, para não pesar no carregamento. Os 36 NFTs do catálogo reutilizam essas 4 artes. Os avatares de criadores e usuários seguem como SVGs gerados, pois o design não traz esses assets.
 - **Dados alinhados ao design**: coleções, redes (Ethereum, Polygon e Solana), preço anterior riscado, selo RARO, avaliações e edições 1/1, 1/10, 1/50 e aberta seguem o Figma. Os 9 primeiros NFTs reproduzem nomes, preços e ordem da tela inicial.
+
+## Desvios do Figma e decisões de UX
+
+Onde o design e os requisitos do desafio conflitam ou o design é ambíguo, a decisão está aqui.
+
+**Pagamento**
+
+- **Revisão antes do envio:** o design não tem esse passo, mas o enunciado exige revisão e nova confirmação diante de mudanças. Ela é um diálogo aberto por "Confirmar compra".
+- **Carteiras cadastradas:** o enunciado pede usar as carteiras cadastradas, então "Tipo de carteira", "Endereço da carteira" e a lista "Carteira e rede" mostram e selecionam essas carteiras, e o endereço é somente leitura. A rede só oferece as que a carteira suporta.
+- **"Usar outra carteira?":** no design não há texto de apoio. Foi implementado como "enviar os NFTs para outra carteira ou ENS": habilita o campo "ENS ou carteira secundária", que passa a ser obrigatório.
+- **Mobile:** o frame mobile só mostra a escolha de carteira e rede, mas os campos do colecionador são obrigatórios, então eles aparecem abaixo. A lista de provedores do frame vira a escolha de rede.
+- **Código de indicação e nome ENS são obrigatórios** (asteriscos do design). O código aceita qualquer valor de 3 a 20 caracteres (ex.: `KURIO2026`).
+- **Cupom:** "Aplique aqui" abre o mesmo formulário de cupom do carrinho; o cupom é compartilhado entre as duas telas.
+
+**Carrinho**
+
+- A taxa de rede simulada da Ethereum foi ajustada para reproduzir os 0,016 ETH do design.
+- Os valores dos itens do frame mobile não somam o subtotal exibido; as telas usam os dados reais dos mocks.
+
+**Catálogo e detalhe**
+
+- A coluna da direita do catálogo mobile não é deslocada para baixo como no frame, para os cards ficarem alinhados.
+- O frame mobile do detalhe repete a edição "1/10"; a tela usa 1/1, 1/10, 1/50 e aberta, como no desktop.
+- No desktop do detalhe, os rótulos "Contrato" e "Direitos autorais" estão trocados com seus textos; cada rótulo mostra o seu conteúdo.
+- O texto do segundo banner da tela inicial está cortado no design; foi completado com "cultura da internet".
+- Itens fora do escopo (Criadores, Aprenda, ações sociais, newsletter, escanear) aparecem desabilitados e anunciam "indisponível nesta demonstração".

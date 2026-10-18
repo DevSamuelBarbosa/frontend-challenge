@@ -18,6 +18,8 @@ export const profileSchema = z.object({
   username: z.string(),
   email: z.email(),
   bio: z.string(),
+  /** Nome ENS do colecionador, ex.: "ana.eth". Vazio enquanto não informado. */
+  ensName: z.string(),
   avatarUrl: z.string().nullable(),
   createdAt: isoDateSchema,
   updatedAt: isoDateSchema,

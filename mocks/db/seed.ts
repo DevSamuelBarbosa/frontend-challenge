@@ -1,7 +1,7 @@
 import { coupons, favorites, nfts, users, wallets } from '../fixtures'
 import type { MockState } from './types'
 
-export const SCHEMA_VERSION = 4
+export const SCHEMA_VERSION = 5
 
 /** Estado inicial conhecido, sempre montado a partir de cópias das fixtures */
 export function createSeedState(): MockState {

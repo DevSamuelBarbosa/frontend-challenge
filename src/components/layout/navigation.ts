@@ -15,13 +15,18 @@ export function useMainSection(): MainSection {
 
 /** O detalhe do NFT tem uma barra de compra fixa no mobile, que substitui a navegação inferior */
 export function useHasBuyBar() {
-  return useRouterState({ select: (s) => s.location.pathname.startsWith('/nfts/') })
+  return useRouterState({
+    select: (s) => s.location.pathname.startsWith('/nfts/') || s.location.pathname === '/checkout',
+  })
 }
 
 /** Telas com a própria barra de ações no mobile, que substitui a navegação inferior */
 export function useHidesMobileNav() {
   return useRouterState({
-    select: (s) => s.location.pathname.startsWith('/nfts/') || s.location.pathname === '/cart',
+    select: (s) =>
+      s.location.pathname.startsWith('/nfts/') ||
+      s.location.pathname === '/cart' ||
+      s.location.pathname === '/checkout',
   })
 }
 

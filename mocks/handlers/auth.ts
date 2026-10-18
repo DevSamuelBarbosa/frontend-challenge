@@ -31,6 +31,7 @@ export const authHandlers = [
       username: body.username,
       email,
       bio: '',
+      ensName: '',
       avatarUrl: null,
       createdAt: now,
       updatedAt: now,

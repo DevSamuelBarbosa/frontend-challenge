@@ -110,7 +110,11 @@ export function createCheckoutController({ queryClient, userId, store }: Control
       quoteId: quote.id,
       walletId: draft.walletId,
       network: draft.network,
-      collector: draft.collector,
+      // Sem "usar outra carteira", os NFTs vão para a carteira escolhida
+      collector: {
+        ...draft.collector,
+        secondaryWallet: draft.deliverToOther ? draft.collector.secondaryWallet : '',
+      },
     }
     const idempotencyKey = crypto.randomUUID()
     // Gravada antes do envio: um refresh no meio da requisição não perde a chave
