@@ -1,10 +1,11 @@
 import axios from 'axios'
+import { API_BASE_URL, REQUEST_TIMEOUT_MS } from './config'
 import { toApiError } from './errors'
 
 /** Instância única do Axios usada por todas as chamadas REST */
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? '/api',
-  timeout: 10_000,
+  baseURL: API_BASE_URL,
+  timeout: REQUEST_TIMEOUT_MS,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',

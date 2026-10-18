@@ -3,13 +3,7 @@ import { compareEth } from '@/lib/eth'
 import { db, type MockOrder, type MockQuote } from '../db'
 import { findEdition, maxQuantity } from './catalog'
 import { sha256 } from './crypto'
-
-/** Configuração do pagamento simulado. Os cenários de rede alteram estes valores. */
-export const paymentSimulation = {
-  outcome: 'confirmed' as MockOrder['outcome'],
-  /** Tempo até o pedido pendente ser finalizado */
-  delayMs: 3000,
-}
+import { adjustAvailability } from './mutations'
 
 const EXPLORERS: Record<Network, string> = {
   ethereum: 'https://etherscan.io/tx/',
@@ -82,17 +76,10 @@ export function findQuoteChanges(quote: MockQuote): QuoteChange[] {
   return changes
 }
 
-/** Altera o estoque das edições do pedido e incrementa a versão dos NFTs afetados */
+/** Altera o estoque das edições do pedido (a versão dos NFTs é incrementada em `updateEditions`) */
 function adjustStock(lines: QuoteLine[], direction: -1 | 1) {
-  db.update((draft) => {
-    for (const line of lines) {
-      const nft = draft.nfts.find((n) => n.id === line.nftId)
-      const edition = nft?.editions.find((e) => e.id === line.editionId)
-      if (!nft || !edition) continue
-      edition.available = Math.max(0, edition.available + direction * line.quantity)
-      nft.version += 1
-    }
-  })
+  for (const line of lines)
+    adjustAvailability(line.nftId, line.editionId, direction * line.quantity)
 }
 
 export const reserveStock = (lines: QuoteLine[]) => adjustStock(lines, -1)
@@ -114,9 +101,10 @@ function removePurchasedFromCart(order: MockOrder) {
  * pelo timer, para o resultado sobreviver a refresh e reconexão.
  * Pedidos confirmados ou recusados são terminais.
  */
-export async function settleOrder(orderId: string, now = Date.now()) {
+export async function settleOrder(orderId: string, options: { force?: boolean } = {}) {
   const order = db.state.orders.find((o) => o.id === orderId)
-  if (!order || order.status !== 'pending' || Date.parse(order.resolveAt) > now) return order
+  if (!order || order.status !== 'pending') return order
+  if (!options.force && Date.parse(order.resolveAt) > Date.now()) return order
 
   const transaction =
     order.outcome === 'confirmed'
@@ -143,7 +131,7 @@ export async function settleOrder(orderId: string, now = Date.now()) {
     target.rejectionReason =
       current.outcome === 'rejected' ? 'A carteira recusou a assinatura da transação' : null
     target.version += 1
-    target.updatedAt = new Date(now).toISOString()
+    target.updatedAt = new Date().toISOString()
   })
   return db.state.orders.find((o) => o.id === orderId)
 }

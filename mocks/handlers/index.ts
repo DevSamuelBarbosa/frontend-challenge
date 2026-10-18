@@ -1,5 +1,5 @@
-import { http, HttpResponse } from 'msw'
-import { apiUrl } from '../utils'
+import { HttpResponse } from 'msw'
+import { api } from '../lib/http'
 import { authHandlers } from './auth'
 import { cartHandlers } from './cart'
 import { favoriteHandlers } from './favorites'
@@ -11,7 +11,7 @@ import { walletHandlers } from './wallets'
 
 export const handlers = [
   // Verificação rápida de que os mocks estão ativos
-  http.get(apiUrl('/health'), () => HttpResponse.json({ status: 'ok', mocks: true })),
+  api.get('/health', () => HttpResponse.json({ status: 'ok', mocks: true })),
   ...authHandlers,
   ...nftHandlers,
   ...favoriteHandlers,

@@ -1,10 +1,10 @@
-import { http, HttpResponse } from 'msw'
+import { HttpResponse } from 'msw'
 import { createWalletRequestSchema, updateWalletRequestSchema, walletSchema } from '@/api/contracts'
 import { db } from '../db'
 import type { MockWallet } from '../fixtures'
+import { api } from '../lib/http'
 import { errorResponse, parseBody } from '../lib/responses'
 import { requireSession } from '../lib/session'
-import { apiUrl } from '../utils'
 
 const toWallet = (wallet: MockWallet) => walletSchema.parse(wallet)
 
@@ -23,7 +23,7 @@ function addressConflict(userId: string, address: string, ignoreId?: string) {
 }
 
 export const walletHandlers = [
-  http.get(apiUrl('/wallets'), ({ request }) => {
+  api.get('/wallets', ({ request }) => {
     const { user } = requireSession(request)
     const wallets = userWallets(user.id)
       // Principal primeiro
@@ -32,7 +32,7 @@ export const walletHandlers = [
     return HttpResponse.json(wallets)
   }),
 
-  http.post(apiUrl('/wallets'), async ({ request }) => {
+  api.post('/wallets', async ({ request }) => {
     const { user } = requireSession(request)
     const body = await parseBody(request, createWalletRequestSchema)
 
@@ -59,7 +59,7 @@ export const walletHandlers = [
     return HttpResponse.json(toWallet(wallet), { status: 201 })
   }),
 
-  http.patch(apiUrl('/wallets/:walletId'), async ({ request, params }) => {
+  api.patch('/wallets/:walletId', async ({ request, params }) => {
     const { user } = requireSession(request)
     const body = await parseBody(request, updateWalletRequestSchema)
     const wallet = userWallets(user.id).find((w) => w.id === params.walletId)

@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw'
+import { HttpResponse } from 'msw'
 import {
   AVATAR_MAX_BYTES,
   AVATAR_MIME_TYPES,
@@ -10,9 +10,9 @@ import { db } from '../db'
 import type { MockUser } from '../fixtures'
 import { toAvatarDataUrl } from '../lib/avatar'
 import { hashPassword, randomToken, verifyPassword } from '../lib/crypto'
+import { api } from '../lib/http'
 import { errorResponse, parseBody } from '../lib/responses'
 import { requireSession } from '../lib/session'
-import { apiUrl } from '../utils'
 
 /** Valida contra o contrato e remove hash e salt da senha */
 const toProfile = (user: MockUser) => profileSchema.parse(user)
@@ -26,12 +26,12 @@ function updateUser(userId: string, changes: Partial<MockUser>) {
 }
 
 export const profileHandlers = [
-  http.get(apiUrl('/profile'), ({ request }) => {
+  api.get('/profile', ({ request }) => {
     const { user } = requireSession(request)
     return HttpResponse.json(toProfile(user))
   }),
 
-  http.patch(apiUrl('/profile'), async ({ request }) => {
+  api.patch('/profile', async ({ request }) => {
     const { user } = requireSession(request)
     const body = await parseBody(request, updateProfileRequestSchema)
     const email = body.email.toLowerCase()
@@ -49,7 +49,7 @@ export const profileHandlers = [
     return HttpResponse.json(toProfile(updateUser(user.id, { ...body, email })))
   }),
 
-  http.put(apiUrl('/profile/avatar'), async ({ request }) => {
+  api.put('/profile/avatar', async ({ request }) => {
     const { user } = requireSession(request)
     const form = await request.formData().catch(() => null)
     const file = form?.get('file')
@@ -79,12 +79,12 @@ export const profileHandlers = [
     return HttpResponse.json(toProfile(updateUser(user.id, { avatarUrl })))
   }),
 
-  http.delete(apiUrl('/profile/avatar'), ({ request }) => {
+  api.delete('/profile/avatar', ({ request }) => {
     const { user } = requireSession(request)
     return HttpResponse.json(toProfile(updateUser(user.id, { avatarUrl: null })))
   }),
 
-  http.put(apiUrl('/profile/password'), async ({ request }) => {
+  api.put('/profile/password', async ({ request }) => {
     const { user, session } = requireSession(request)
     const body = await parseBody(request, changePasswordRequestSchema)
 

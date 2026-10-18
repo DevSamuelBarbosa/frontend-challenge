@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw'
+import { HttpResponse } from 'msw'
 import {
   addCartItemRequestSchema,
   mergeCartRequestSchema,
@@ -8,9 +8,9 @@ import {
 import { db } from '../db'
 import { findCartItemByEdition, toCart, upsertCartItem } from '../lib/cart'
 import { findEdition, maxQuantity } from '../lib/catalog'
+import { api } from '../lib/http'
 import { errorResponse, parseBody } from '../lib/responses'
 import { requireSession } from '../lib/session'
-import { apiUrl } from '../utils'
 
 /** Conflito de disponibilidade, com os limites para a interface ajustar a quantidade */
 function availabilityConflict(edition: NftEdition) {
@@ -33,12 +33,12 @@ function availabilityConflict(edition: NftEdition) {
 }
 
 export const cartHandlers = [
-  http.get(apiUrl('/cart'), ({ request }) => {
+  api.get('/cart', ({ request }) => {
     const { user } = requireSession(request)
     return HttpResponse.json(toCart(user.id))
   }),
 
-  http.post(apiUrl('/cart/items'), async ({ request }) => {
+  api.post('/cart/items', async ({ request }) => {
     const { user } = requireSession(request)
     const body = await parseBody(request, addCartItemRequestSchema)
     const found = findEdition(db.state.nfts, body.nftId, body.editionId)
@@ -53,7 +53,7 @@ export const cartHandlers = [
     return HttpResponse.json(toCart(user.id), { status: existing ? 200 : 201 })
   }),
 
-  http.patch(apiUrl('/cart/items/:itemId'), async ({ request, params }) => {
+  api.patch('/cart/items/:itemId', async ({ request, params }) => {
     const { user } = requireSession(request)
     const { quantity } = await parseBody(request, updateCartItemRequestSchema)
     const item = db.state.carts[user.id]?.find((i) => i.id === params.itemId)
@@ -71,7 +71,7 @@ export const cartHandlers = [
     return HttpResponse.json(toCart(user.id))
   }),
 
-  http.delete(apiUrl('/cart/items/:itemId'), ({ request, params }) => {
+  api.delete('/cart/items/:itemId', ({ request, params }) => {
     const { user } = requireSession(request)
     if (!db.state.carts[user.id]?.some((i) => i.id === params.itemId)) {
       return errorResponse('not_found', 'Item não encontrado no carrinho')
@@ -86,7 +86,7 @@ export const cartHandlers = [
    * Junta o carrinho do visitante ao da conta. Itens inexistentes ou esgotados são
    * ignorados e as quantidades são limitadas à disponibilidade, sem gerar erro.
    */
-  http.post(apiUrl('/cart/merge'), async ({ request }) => {
+  api.post('/cart/merge', async ({ request }) => {
     const { user } = requireSession(request)
     const { items } = await parseBody(request, mergeCartRequestSchema)
 

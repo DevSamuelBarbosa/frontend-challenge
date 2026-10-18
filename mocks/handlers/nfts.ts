@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw'
+import { HttpResponse } from 'msw'
 import {
   nftListParamsSchema,
   type NftList,
@@ -8,8 +8,8 @@ import {
 import { compareEth } from '@/lib/eth'
 import { db } from '../db'
 import { normalizeText, toNftSummary } from '../lib/catalog'
+import { api } from '../lib/http'
 import { errorResponse } from '../lib/responses'
-import { apiUrl } from '../utils'
 
 const DEFAULT_PAGE_SIZE = 12
 
@@ -62,7 +62,7 @@ const sorters: Record<
 }
 
 export const nftHandlers = [
-  http.get(apiUrl('/nfts'), ({ request }) => {
+  api.get('/nfts', ({ request }) => {
     const parsed = readParams(new URL(request.url))
     if (!parsed.success) {
       return errorResponse('validation_error', 'Parâmetros de busca inválidos', {
@@ -90,7 +90,7 @@ export const nftHandlers = [
     return HttpResponse.json(body)
   }),
 
-  http.get(apiUrl('/nfts/:nftId'), ({ params }) => {
+  api.get('/nfts/:nftId', ({ params }) => {
     const nft = db.state.nfts.find((n) => n.id === params.nftId)
     if (!nft) return errorResponse('not_found', 'NFT não encontrado')
     return HttpResponse.json(nft)

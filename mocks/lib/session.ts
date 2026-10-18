@@ -1,10 +1,11 @@
 import type { Session, User } from '@/api/contracts'
 import { db, type MockSession } from '../db'
+import { activeScenario } from '../scenarios/runtime'
 import type { MockUser } from '../fixtures'
 import { randomToken } from './crypto'
 import { errorResponse } from './responses'
 
-/** Duração da sessão na simulação */
+/** Duração padrão da sessão na simulação. Cenários podem encurtar. */
 export const SESSION_TTL_MS = 60 * 60 * 1000
 
 export function toPublicUser(user: MockUser): User {
@@ -28,7 +29,7 @@ export function createSession(userId: string): MockSession {
     token: randomToken(),
     userId,
     createdAt: new Date(now).toISOString(),
-    expiresAt: new Date(now + SESSION_TTL_MS).toISOString(),
+    expiresAt: new Date(now + (activeScenario().sessionTtlMs ?? SESSION_TTL_MS)).toISOString(),
   }
   db.update((draft) => {
     draft.sessions.push(session)

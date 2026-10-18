@@ -1,10 +1,10 @@
-import { http, HttpResponse } from 'msw'
+import { HttpResponse } from 'msw'
 import { addFavoriteRequestSchema, type FavoriteList } from '@/api/contracts'
 import { db } from '../db'
 import { toNftSummary } from '../lib/catalog'
+import { api } from '../lib/http'
 import { errorResponse, parseBody } from '../lib/responses'
 import { requireSession } from '../lib/session'
-import { apiUrl } from '../utils'
 
 function toFavoriteList(userId: string): FavoriteList {
   const nftIds = db.state.favorites[userId] ?? []
@@ -23,13 +23,13 @@ function changeFavoritesCount(nftId: string, delta: number) {
 }
 
 export const favoriteHandlers = [
-  http.get(apiUrl('/favorites'), ({ request }) => {
+  api.get('/favorites', ({ request }) => {
     const { user } = requireSession(request)
     return HttpResponse.json(toFavoriteList(user.id))
   }),
 
   // Inclusão e remoção são idempotentes: repetir a operação não muda o resultado
-  http.post(apiUrl('/favorites'), async ({ request }) => {
+  api.post('/favorites', async ({ request }) => {
     const { user } = requireSession(request)
     const { nftId } = await parseBody(request, addFavoriteRequestSchema)
     if (!db.state.nfts.some((n) => n.id === nftId)) {
@@ -45,7 +45,7 @@ export const favoriteHandlers = [
     return HttpResponse.json(toFavoriteList(user.id))
   }),
 
-  http.delete(apiUrl('/favorites/:nftId'), ({ request, params }) => {
+  api.delete('/favorites/:nftId', ({ request, params }) => {
     const { user } = requireSession(request)
     const nftId = String(params.nftId)
 

@@ -1,14 +1,14 @@
-import { http, HttpResponse } from 'msw'
+import { HttpResponse } from 'msw'
 import { loginRequestSchema, registerRequestSchema } from '@/api/contracts'
 import { db } from '../db'
 import type { MockUser } from '../fixtures'
 import { hashPassword, randomToken, verifyPassword } from '../lib/crypto'
+import { api } from '../lib/http'
 import { errorResponse, parseBody } from '../lib/responses'
 import { createSession, getBearerToken, requireSession, toSession } from '../lib/session'
-import { apiUrl } from '../utils'
 
 export const authHandlers = [
-  http.post(apiUrl('/auth/register'), async ({ request }) => {
+  api.post('/auth/register', async ({ request }) => {
     const body = await parseBody(request, registerRequestSchema)
     const email = body.email.toLowerCase()
 
@@ -46,7 +46,7 @@ export const authHandlers = [
     return HttpResponse.json(toSession(createSession(user.id), user), { status: 201 })
   }),
 
-  http.post(apiUrl('/auth/login'), async ({ request }) => {
+  api.post('/auth/login', async ({ request }) => {
     const body = await parseBody(request, loginRequestSchema)
     const user = db.state.users.find((u) => u.email === body.email.toLowerCase())
 
@@ -60,12 +60,12 @@ export const authHandlers = [
     return HttpResponse.json(toSession(createSession(user.id), user))
   }),
 
-  http.get(apiUrl('/auth/session'), ({ request }) => {
+  api.get('/auth/session', ({ request }) => {
     const { session, user } = requireSession(request)
     return HttpResponse.json(toSession(session, user))
   }),
 
-  http.post(apiUrl('/auth/logout'), ({ request }) => {
+  api.post('/auth/logout', ({ request }) => {
     const token = getBearerToken(request)
     if (token) {
       db.update((draft) => {

@@ -1,10 +1,10 @@
-import { http, HttpResponse } from 'msw'
+import { HttpResponse } from 'msw'
 import { createOrderRequestSchema, orderStatusSchema } from '@/api/contracts'
 import { db, type MockOrder } from '../db'
+import { api } from '../lib/http'
 import {
   findQuoteChanges,
   fingerprint,
-  paymentSimulation,
   reserveStock,
   scheduleSettlement,
   settleOrder,
@@ -12,12 +12,13 @@ import {
 } from '../lib/orders'
 import { errorResponse, parseBody } from '../lib/responses'
 import { requireSession } from '../lib/session'
-import { apiUrl } from '../utils'
+import { paymentFor } from '../scenarios/definitions'
+import { activeScenario } from '../scenarios/runtime'
 
 const IDEMPOTENCY_KEY = /^[A-Za-z0-9_-]{8,128}$/
 
 export const orderHandlers = [
-  http.post(apiUrl('/orders'), async ({ request }) => {
+  api.post('/orders', async ({ request }) => {
     const { user } = requireSession(request)
     const key = request.headers.get('Idempotency-Key')
     if (!key || !IDEMPOTENCY_KEY.test(key)) {
@@ -78,6 +79,8 @@ export const orderHandlers = [
       )
     }
 
+    // O resultado do pagamento é decidido agora e guardado, para sobreviver a refresh
+    const payment = paymentFor(activeScenario())
     const now = Date.now()
     const order: MockOrder = {
       id: db.nextId('order'),
@@ -105,8 +108,8 @@ export const orderHandlers = [
       userId: user.id,
       idempotencyKey: key,
       requestFingerprint,
-      outcome: paymentSimulation.outcome,
-      resolveAt: new Date(now + paymentSimulation.delayMs).toISOString(),
+      outcome: payment.outcome,
+      resolveAt: new Date(now + payment.delayMs).toISOString(),
     }
     db.update((draft) => {
       draft.orders.push(order)
@@ -118,7 +121,7 @@ export const orderHandlers = [
     return HttpResponse.json(toOrder(order), { status: 201 })
   }),
 
-  http.get(apiUrl('/orders'), async ({ request }) => {
+  api.get('/orders', async ({ request }) => {
     const { user } = requireSession(request)
     const status = new URL(request.url).searchParams.get('status')
     const parsedStatus = status ? orderStatusSchema.safeParse(status) : null
@@ -136,7 +139,7 @@ export const orderHandlers = [
     return HttpResponse.json(orders)
   }),
 
-  http.get(apiUrl('/orders/:orderId'), async ({ request, params }) => {
+  api.get('/orders/:orderId', async ({ request, params }) => {
     const { user } = requireSession(request)
     const order = db.state.orders.find((o) => o.id === params.orderId && o.userId === user.id)
     if (!order) return errorResponse('not_found', 'Pedido não encontrado')

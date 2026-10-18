@@ -1,7 +1,8 @@
-import { http, HttpResponse } from 'msw'
+import { HttpResponse } from 'msw'
 import { quoteRequestSchema, type Quote } from '@/api/contracts'
 import { eth, toEthAmount } from '@/lib/eth'
 import { db } from '../db'
+import { api } from '../lib/http'
 import {
   applyCoupon,
   buildLines,
@@ -12,14 +13,13 @@ import {
 } from '../lib/quote'
 import { errorResponse, parseBody } from '../lib/responses'
 import { requireSession } from '../lib/session'
-import { apiUrl } from '../utils'
 
 export const quoteHandlers = [
   /**
    * Gera uma nova cotação a partir do carrinho e do catálogo atual. As divergências
    * de preço são calculadas em relação à cotação anterior do mesmo usuário.
    */
-  http.post(apiUrl('/quote'), async ({ request }) => {
+  api.post('/quote', async ({ request }) => {
     const { user } = requireSession(request)
     const body = await parseBody(request, quoteRequestSchema)
 
