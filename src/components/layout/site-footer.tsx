@@ -9,6 +9,8 @@ import {
   YoutubeIcon,
 } from '@/components/icons/social-icons'
 import { UnavailableButton, UnavailableLink } from '@/components/unavailable'
+import { cn } from '@/lib/utils'
+import { useHasBuyBar } from './navigation'
 
 const FEATURES = [
   {
@@ -47,8 +49,9 @@ const SOCIAL: { label: string; Icon: ComponentType<SVGProps<SVGSVGElement>> }[] 
 const linkClass = 'text-sm text-foreground transition-colors hover:text-highlight'
 
 export function SiteFooter() {
+  const hasBuyBar = useHasBuyBar()
   return (
-    <footer className="page-container mt-20 pb-28 md:mt-28 md:pb-0">
+    <footer className={cn('page-container mt-20 md:mt-28 md:pb-0', hasBuyBar ? 'pb-60' : 'pb-28')}>
       <div className="bg-card">
         <section
           aria-label="Benefícios da Kurio"

@@ -16,3 +16,10 @@ export function formatPriceRange(min: EthAmount, max: EthAmount) {
   const pt = (value: EthAmount) => formatEth(value, { unit: false }).replace('.', ',')
   return `${pt(min)} - ${pt(max)} ETH`
 }
+
+/** Endereço abreviado como no design: 0x7A42...19E8 */
+export function shortAddress(address: string, head = 6, tail = 4) {
+  return address.length <= head + tail + 3
+    ? address
+    : `${address.slice(0, head)}...${address.slice(-tail)}`
+}

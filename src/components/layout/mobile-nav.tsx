@@ -4,13 +4,15 @@ import type { ReactNode } from 'react'
 import { UnavailableButton } from '@/components/unavailable'
 import { cn } from '@/lib/utils'
 import { useSession } from '@/queries/session'
-import { cartLabel, useCartCount } from './navigation'
+import { cartLabel, useCartCount, useHasBuyBar } from './navigation'
 
 /** Barra de navegação inferior do mobile, com o recorte para o botão central */
 export function MobileNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const count = useCartCount()
   const { user } = useSession()
+  const hasBuyBar = useHasBuyBar()
+  if (hasBuyBar) return null
 
   return (
     <nav

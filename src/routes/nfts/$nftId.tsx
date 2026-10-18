@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { isApiError } from '@/api/errors'
 import { NotFound } from '@/components/not-found'
-import { useCart } from '@/queries/cart'
-import { useFavorites } from '@/queries/favorites'
+import { NftDetail, NftDetailSkeleton } from '@/features/nft/components/nft-detail'
+import { useDocumentTitle } from '@/hooks/use-document-title'
 import { nftQueryOptions } from '@/queries/nfts'
 
 export const Route = createFileRoute('/nfts/$nftId')({
@@ -15,10 +15,8 @@ export const Route = createFileRoute('/nfts/$nftId')({
 
 function NftDetailPage() {
   const { nftId } = Route.useParams()
-  const { data: nft, status, error } = useQuery(nftQueryOptions(nftId))
-  const { isFavorite, toggle, mutation } = useFavorites()
-  const favorite = isFavorite(nftId)
-  const cart = useCart()
+  const { data: nft, status, error, refetch } = useQuery(nftQueryOptions(nftId))
+  useDocumentTitle(nft?.name ?? (status === 'pending' ? 'Carregando NFT' : undefined))
 
   if (isApiError(error) && error.code === 'not_found') {
     return (
@@ -29,44 +27,24 @@ function NftDetailPage() {
     )
   }
 
-  // Renderização provisória: a tela do Figma substitui este conteúdo
-  return (
-    <>
-      <h1 className="text-2xl font-bold">{nft?.name ?? 'Detalhes do NFT'}</h1>
-      <p aria-live="polite">
-        {status === 'pending' && 'Carregando…'}
-        {status === 'error' && `Erro: ${error.message}`}
-      </p>
-      {nft && (
-        <p>
-          <button type="button" aria-pressed={favorite} onClick={() => toggle(nftId)}>
-            {favorite ? 'Remover dos favoritos' : 'Favoritar'}
-          </button>{' '}
-          {nft.favoritesCount} favoritos
-          {mutation.isError && <span role="alert"> Não foi possível salvar o favorito.</span>}
-          {cart.mutation.isError && <span role="alert"> {cart.mutation.error.message}</span>}
-        </p>
-      )}
-      {nft && (
-        <ul>
-          {nft.editions.map((edition) => (
-            <li key={edition.id}>
-              {edition.name} · {edition.priceEth} ETH · {edition.available} disponíveis{' '}
-              <button
-                type="button"
-                disabled={edition.available === 0 || cart.mutation.isPending}
-                onClick={() =>
-                  void cart
-                    .add({ nftId, editionId: edition.id, quantity: 1 })
-                    .catch(() => undefined)
-                }
-              >
-                {edition.available === 0 ? 'Esgotado' : 'Adicionar ao carrinho'}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </>
-  )
+  if (status === 'error') {
+    return (
+      <section role="alert" className="page-container flex flex-col items-start gap-4 py-16">
+        <h1 className="text-xl font-bold">Não foi possível carregar o NFT.</h1>
+        <p className="text-sm text-muted-foreground">{error.message}</p>
+        <button
+          type="button"
+          onClick={() => void refetch()}
+          className="rounded-md bg-primary px-4 py-2 font-bold text-primary-foreground"
+        >
+          Tentar novamente
+        </button>
+      </section>
+    )
+  }
+
+  if (status === 'pending') return <NftDetailSkeleton />
+
+  // A `key` reinicia edição e quantidade ao navegar para outro NFT
+  return <NftDetail key={nft.id} nft={nft} />
 }

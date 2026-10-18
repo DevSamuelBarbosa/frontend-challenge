@@ -9,7 +9,7 @@ import {
 } from './common'
 
 /*
- * GET /nfts?q&category&network&minPrice&maxPrice&availability&feed&featured&sort&page&pageSize
+ * GET /nfts?q&category&network&minPrice&maxPrice&availability&feed&featured&collection&sort&page&pageSize
  *        -> NftList (página + contagens por coleção e rede para os filtros)
  * GET /nfts/:nftId -> Nft (404 se não existir)
  */
@@ -160,6 +160,8 @@ export const nftListParamsSchema = z.object({
   feed: nftFeedSchema.optional(),
   /** Só NFTs em destaque (vitrine da tela inicial) */
   featured: z.boolean().optional(),
+  /** Só NFTs de uma série, ex.: "Kurio Apes" ("Mais desta coleção" do detalhe) */
+  collection: z.string().trim().min(1).optional(),
   sort: nftSortSchema.optional(),
   page: z.number().int().positive().optional(),
   pageSize: z.number().int().positive().max(48).optional(),

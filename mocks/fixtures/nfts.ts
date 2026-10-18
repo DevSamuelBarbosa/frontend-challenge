@@ -27,7 +27,7 @@ import { creators } from './creators'
 type Artwork = 'emerald-ape' | 'nomad-gorilla' | 'golden-ape' | 'ivory-ape'
 
 const ARTWORK_ATTRIBUTES: Record<Artwork, string[]> = {
-  'emerald-ape': ['Óculos', 'Esmeralda', 'Jaqueta'],
+  'emerald-ape': ['Óculos', 'Esmeralda'],
   'nomad-gorilla': ['Chapéu', 'Moletom', 'Sereno'],
   'golden-ape': ['Fone', 'Dourado', 'Jaqueta'],
   'ivory-ape': ['Terno', 'Gola alta', 'Brinco'],
@@ -152,6 +152,8 @@ const NETWORK_LABEL: Record<Network, string> = {
 
 /** Endereço de contrato determinístico, no formato da rede */
 function contractAddress(n: number, network: Network) {
+  // O primeiro NFT usa o endereço do design (0x7A42...19E8)
+  if (n === 1) return `0x7A42${'c0ffee'.repeat(5)}ab${'19E8'}`
   const hex = Array.from({ length: 40 }, (_, i) => ((n * 31 + i * 17) % 16).toString(16)).join('')
   if (network !== 'solana') return `0x${hex.toUpperCase()}`
   const base58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
@@ -210,7 +212,7 @@ export const nfts: Nft[] = ROWS.map(
         standard: network === 'solana' ? 'Metaplex' : 'ERC-721',
         royaltyPercent: 5,
       },
-      attributes: [...ARTWORK_ATTRIBUTES[artwork], ...(n % 7 === 3 ? ['Raro'] : [])],
+      attributes: [...ARTWORK_ATTRIBUTES[artwork], ...(n % 7 === 3 || n === 1 ? ['Raro'] : [])],
       rarity: n % 7 === 3 ? 'rare' : 'common',
       featured: ['nft-001', 'nft-002', 'nft-006'].includes(id),
       creator,

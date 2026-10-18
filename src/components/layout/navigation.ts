@@ -13,6 +13,11 @@ export function useMainSection(): MainSection {
   return null
 }
 
+/** O detalhe do NFT tem uma barra de compra fixa no mobile, que substitui a navegação inferior */
+export function useHasBuyBar() {
+  return useRouterState({ select: (s) => s.location.pathname.startsWith('/nfts/') })
+}
+
 /** Quantidade total de unidades no carrinho, para o contador */
 export function useCartCount() {
   const { items } = useCart()
