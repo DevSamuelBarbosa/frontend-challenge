@@ -1,0 +1,51 @@
+import { defineConfig, devices } from '@playwright/test'
+
+const PORT = 4173
+const BASE_URL = `http://localhost:${PORT}`
+
+/**
+ * Testes E2E contra o build de produção com a API simulada (MSW). Cada teste roda num
+ * contexto novo do navegador (armazenamento e Service Worker próprios) e abre a aplicação
+ * com `?scenario=`, que restaura o banco simulado: nenhum estado passa de um teste a outro.
+ */
+export default defineConfig({
+  testDir: './e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 1 : 0,
+  workers: process.env.CI ? 2 : undefined,
+  timeout: 45_000,
+  expect: { timeout: 8_000 },
+  reporter: [['list'], ['html', { open: 'never' }]],
+  use: {
+    baseURL: BASE_URL,
+    locale: 'pt-BR',
+    timezoneId: 'America/Sao_Paulo',
+    // Sem animações: telas estáveis para as asserções e a regressão visual
+    reducedMotion: 'reduce',
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+  },
+  projects: [
+    {
+      name: 'desktop',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+    },
+    {
+      name: 'mobile',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 414, height: 896 },
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
+  ],
+  webServer: {
+    command: `npx vite build --logLevel warn && npx vite preview --port ${PORT} --strictPort`,
+    url: BASE_URL,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+  },
+})

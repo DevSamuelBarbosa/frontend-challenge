@@ -7,7 +7,14 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default defineConfig([
-  globalIgnores(['dist', 'coverage', 'src/routeTree.gen.ts', 'public/mockServiceWorker.js']),
+  globalIgnores([
+    'dist',
+    'coverage',
+    'playwright-report',
+    'test-results',
+    'src/routeTree.gen.ts',
+    'public/mockServiceWorker.js',
+  ]),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -21,6 +28,12 @@ export default defineConfig([
       ecmaVersion: 2023,
       globals: globals.browser,
     },
+  },
+  {
+    // Testes E2E rodam no Node; o `use` das fixtures do Playwright não é o hook do React
+    files: ['e2e/**/*.ts', 'playwright.config.ts'],
+    languageOptions: { globals: globals.node },
+    rules: { 'react-hooks/rules-of-hooks': 'off' },
   },
   {
     // shadcn/ui exporta variantes junto com o componente e as rotas exportam `Route`

@@ -5,3 +5,5 @@ README.md
 src/routeTree.gen.ts
 public/mockServiceWorker.js
 .claude
+playwright-report
+test-results
