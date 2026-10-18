@@ -25,3 +25,8 @@ export function compareEth(a: EthAmount, b: EthAmount) {
 export function minEth(values: EthAmount[]): EthAmount {
   return values.reduce((min, value) => (compareEth(value, min) < 0 ? value : min))
 }
+
+/** Valor × quantidade inteira, em decimal exato. Ex.: mulEth('0.12', 3) = '0.36' */
+export function mulEth(amount: EthAmount, quantity: number): EthAmount {
+  return toEthAmount(eth(amount).times(quantity))
+}

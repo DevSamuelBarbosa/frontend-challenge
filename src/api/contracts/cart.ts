@@ -23,6 +23,8 @@ export const cartItemSchema = z.object({
   quantity: quantitySchema,
   /** Dados atuais do catálogo, para exibição. O valor final vem sempre da cotação. */
   name: z.string(),
+  /** Número do token, exibido como "ID do token: #0042" */
+  tokenId: z.string(),
   editionName: z.string(),
   image: imageSchema,
   unitPriceEth: ethAmountSchema,

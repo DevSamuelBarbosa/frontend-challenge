@@ -15,8 +15,8 @@ const MAX_QUOTES_PER_USER = 20
 
 /** Taxa de rede simulada: valor base + valor por linha do pedido */
 const NETWORK_FEES: Record<Network, { base: EthAmount; perLine: EthAmount }> = {
-  ethereum: { base: '0.0025', perLine: '0.0005' },
-  polygon: { base: '0.00008', perLine: '0.00001' },
+  ethereum: { base: '0.01', perLine: '0.002' },
+  polygon: { base: '0.0002', perLine: '0.00005' },
   solana: { base: '0.00002', perLine: '0.000005' },
 }
 

@@ -2,7 +2,8 @@ import { z } from 'zod'
 import { ethAmountSchema, idSchema, isoDateSchema, networkSchema, quantitySchema } from './common'
 
 /*
- * Requer autenticação. A cotação é a referência de valores para finalizar o pedido.
+ * A cotação é a referência de valores para finalizar o pedido. Vale para o carrinho da conta
+ * (Bearer) e também para o do visitante (`X-Guest-Cart-Id`), para o resumo do carrinho.
  * POST /quote  QuoteRequest -> Quote
  */
 

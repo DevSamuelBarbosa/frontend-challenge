@@ -90,6 +90,9 @@ Erros 4xx nunca são repetidos automaticamente: 404, 401 e validação são defi
 - O carrinho do visitante também fica na API, identificado por um id anônimo (`X-Guest-Cart-Id`) criado no primeiro item. Assim as regras de estoque e limite existem em um lugar só e o cliente tem um único caminho.
 - Ao autenticar, `POST /cart/merge` junta os carrinhos no servidor: as quantidades são somadas e limitadas à disponibilidade. Se a junção falhar, o id do visitante é mantido e ela é tentada de novo.
 - Nome, preço e estoque dos itens vêm do catálogo atual. A **cotação** é a referência de valores (subtotal, desconto, taxa de rede e total) e acusa divergências (`price_changed`, `quantity_reduced`, `sold_out`).
+- **Resumo do carrinho**: subtotal, desconto, taxa de rede e total vêm sempre da cotação (`POST /quote`), nunca de somas no cliente. A cotação também vale para o carrinho do visitante, só para o resumo: o pedido continua exigindo login. O cupom fica no mesmo estado do pagamento (por usuário ou visitante) e acompanha o usuário ao entrar e ao seguir para o checkout.
+- **Alterações em andamento**: ao mudar uma quantidade, o resumo já fica em "atualizando" até a nova cotação chegar. Os controles do item alterado ficam desabilitados até a resposta, para um clique rápido não usar uma quantidade desatualizada.
+- **Itens indisponíveis**: itens esgotados ou acima do estoque (inclusive por eventos em tempo real) ganham aviso na linha, com "Ajustar", e bloqueiam o botão de finalizar até serem corrigidos.
 
 ## Checkout
 

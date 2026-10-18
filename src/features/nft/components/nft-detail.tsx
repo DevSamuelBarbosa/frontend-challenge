@@ -6,7 +6,7 @@ import type { EthAmount, Nft, NftEdition } from '@/api/contracts'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useIsDesktop } from '@/hooks/use-media-query'
 import { compareEth } from '@/lib/eth'
-import { eth, toEthAmount } from '@/lib/eth'
+import { mulEth } from '@/lib/eth'
 import { formatEth } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { useCart } from '@/queries/cart'
@@ -14,7 +14,7 @@ import { useFavorites } from '@/queries/favorites'
 import { EditionPicker } from './edition-picker'
 import { NftGallery } from './nft-gallery'
 import { NftTabs } from './nft-tabs'
-import { QuantityStepper } from './quantity-stepper'
+import { QuantityStepper } from '@/components/quantity-stepper'
 import { RatingStars } from './rating-stars'
 import { RelatedNfts } from './related-nfts'
 import { ShareLinks } from './share-links'
@@ -26,9 +26,6 @@ function defaultEdition(editions: NftEdition[]) {
     compareEth(e.priceEth, min.priceEth) < 0 ? e : min,
   )
 }
-
-/** Valor da linha: preço unitário × quantidade, em decimal exato (sem ponto flutuante) */
-const lineTotal = (price: EthAmount, quantity: number) => toEthAmount(eth(price).times(quantity))
 
 /** Máximo que o usuário pode comprar de uma vez: o menor entre o estoque e o limite por pedido */
 const maxQuantity = (edition: NftEdition) => Math.min(edition.available, edition.maxPerOrder)
@@ -60,9 +57,9 @@ export function NftDetail({ nft }: { nft: Nft }) {
   const favorite = isFavorite(nft.id)
   const message = limitMessage(edition, quantity)
   // O valor exibido acompanha a quantidade escolhida
-  const total = lineTotal(edition.priceEth, quantity)
+  const total = mulEth(edition.priceEth, quantity)
   const compareTotal = edition.compareAtPriceEth
-    ? lineTotal(edition.compareAtPriceEth, quantity)
+    ? mulEth(edition.compareAtPriceEth, quantity)
     : null
   const url = typeof window === 'undefined' ? '' : window.location.href
 

@@ -19,6 +19,7 @@ export function toCart(owner: string): Cart {
       editionId: edition.id,
       quantity: item.quantity,
       name: nft.name,
+      tokenId: nft.tokenId,
       editionName: edition.name,
       image: nft.images[0],
       unitPriceEth: edition.priceEth,

@@ -11,11 +11,20 @@ import { useSyncExternalStore } from 'react'
 import * as cartApi from '@/api/cart'
 import type { AddCartItemRequest, Cart } from '@/api/contracts'
 import { guestCartId } from '@/api/guest-cart-id'
+import { checkoutStore } from '@/features/checkout/store'
 import { queryKeys } from './keys'
 import { useSession } from './session'
 
 /** Dono do carrinho: o usuário autenticado ou o visitante (se já tiver carrinho) */
 export type CartOwner = { type: 'user'; userId: string } | { type: 'guest'; guestCartId: string }
+
+/**
+ * Identificador do dono para chaves de cache e do estado do pagamento. O prefixo
+ * `guest:` separa o visitante dos ids de usuário, e tudo sai do cache no logout.
+ */
+export function cartOwnerKey(owner: CartOwner) {
+  return owner.type === 'user' ? owner.userId : `guest:${owner.guestCartId}`
+}
 
 export function cartQueryKey(owner: CartOwner): QueryKey {
   return owner.type === 'user'
@@ -63,9 +72,7 @@ export const cartChangeMutationOptions = (queryClient: QueryClient, getOwner: ()
       const owner = getOwner()
       queryClient.setQueryData(cartQueryKey(owner), cart)
       // O resumo de valores depende do carrinho: a cotação é refeita
-      if (owner.type === 'user') {
-        void queryClient.invalidateQueries({ queryKey: queryKeys.user.quote(owner.userId) })
-      }
+      void queryClient.invalidateQueries({ queryKey: queryKeys.user.quote(cartOwnerKey(owner)) })
     },
   })
 
@@ -101,6 +108,8 @@ export function useCart() {
     owner,
     cart,
     items: cart?.items ?? [],
+    /** Sessão ou carrinho ainda carregando: a tela mostra skeleton em vez do estado vazio */
+    isPending: sessionPending || (owner !== null && query.isPending),
     query,
     mutation,
     add: (item: AddCartItemRequest) => mutation.mutateAsync({ type: 'add', item }),
@@ -108,6 +117,18 @@ export function useCart() {
       mutation.mutateAsync({ type: 'update', itemId, quantity }),
     remove: (itemId: string) => mutation.mutateAsync({ type: 'remove', itemId }),
   }
+}
+
+/** O cupom aplicado no carrinho do visitante acompanha o carrinho para a conta */
+function carryCouponToAccount(userId: string, guestId: string) {
+  const guestKey = `guest:${guestId}`
+  const guest = checkoutStore(guestKey)
+  const coupon = guest.get().draft.couponCode
+  const account = checkoutStore(userId)
+  if (coupon && !account.get().draft.couponCode) {
+    account.update((s) => ({ ...s, draft: { ...s.draft, couponCode: coupon } }))
+  }
+  guest.clear()
 }
 
 let mergeInFlight: Promise<void> | null = null
@@ -126,6 +147,7 @@ export function mergeGuestCartIntoAccount(queryClient: QueryClient, userId: stri
       queryClient.setQueryData(queryKeys.user.cart(userId), cart)
       guestCartId.clear()
       queryClient.removeQueries({ queryKey: queryKeys.guestCart(guestId) })
+      carryCouponToAccount(userId, guestId)
     })
     .catch(() => undefined)
     .finally(() => {
