@@ -72,6 +72,8 @@ export function buildLines(userId: string, previous: MockQuote | undefined) {
       unitPriceEth: edition.priceEth,
       lineTotalEth: toEthAmount(eth(edition.priceEth).times(quantity)),
       nftVersion: nft.version,
+      tokenId: nft.tokenId,
+      image: nft.images[0],
     })
   }
 

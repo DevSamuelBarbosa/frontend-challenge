@@ -1,5 +1,12 @@
 import { z } from 'zod'
-import { ethAmountSchema, idSchema, isoDateSchema, networkSchema, quantitySchema } from './common'
+import {
+  ethAmountSchema,
+  idSchema,
+  imageSchema,
+  isoDateSchema,
+  networkSchema,
+  quantitySchema,
+} from './common'
 
 /*
  * A cotação é a referência de valores para finalizar o pedido. Vale para o carrinho da conta
@@ -23,6 +30,9 @@ export const quoteLineSchema = z.object({
   unitPriceEth: ethAmountSchema,
   lineTotalEth: ethAmountSchema,
   nftVersion: z.number().int().nonnegative(),
+  /** Dados de exibição no momento da cotação: o recibo do pedido não depende do catálogo atual */
+  tokenId: z.string(),
+  image: imageSchema,
 })
 export type QuoteLine = z.infer<typeof quoteLineSchema>
 

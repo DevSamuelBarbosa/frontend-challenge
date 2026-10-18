@@ -163,6 +163,13 @@ Onde o design e os requisitos do desafio conflitam ou o design é ambíguo, a de
 - **Código de indicação e nome ENS são obrigatórios** (asteriscos do design). O código aceita qualquer valor de 3 a 20 caracteres (ex.: `KURIO2026`).
 - **Cupom:** "Aplique aqui" abre o mesmo formulário de cupom do carrinho; o cupom é compartilhado entre as duas telas.
 
+**Confirmação do pedido**
+
+- O frame existe só no desktop (um modal). A rota `/orders/:id` abre o recibo em um diálogo no desktop e em **tela cheia** no celular, sem frame. Fechar (X ou Esc) leva ao início.
+- O recibo só aparece para pedido **confirmado**. Pendente mostra "Pagamento pendente" e muda sozinho para o recibo (consulta periódica e evento `order.updated`); recusado mostra o motivo e volta ao carrinho.
+- Itens, valores, carteira e colecionador vêm do snapshot gravado no pedido. As linhas da cotação guardam também a imagem e o ID do token, então o recibo não muda se o catálogo mudar. Um pedido de outro usuário responde 404.
+- Acrescentado ao design: botão para copiar o ID da transação, o rótulo "Referência simulada" junto ao link de exploração e, com cupom, as linhas de subtotal e desconto. O texto do link acompanha a rede (Etherscan, Polygonscan ou Solscan).
+
 **Carrinho**
 
 - A taxa de rede simulada da Ethereum foi ajustada para reproduzir os 0,016 ETH do design.

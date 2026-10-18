@@ -23,3 +23,16 @@ export function shortAddress(address: string, head = 6, tail = 4) {
     ? address
     : `${address.slice(0, head)}...${address.slice(-tail)}`
 }
+
+const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+
+/** Data do recibo, como no design: "29 Jul, 2026" (usa o fuso do navegador) */
+export function formatReceiptDate(iso: string) {
+  const date = new Date(iso)
+  return `${date.getDate()} ${MONTHS[date.getMonth()]}, ${date.getFullYear()}`
+}
+
+/** Hash de transação abreviado, como no design: 0xA91F…E82C */
+export function shortHash(hash: string, head = 6, tail = 4) {
+  return hash.length <= head + tail + 1 ? hash : `${hash.slice(0, head)}…${hash.slice(-tail)}`
+}
