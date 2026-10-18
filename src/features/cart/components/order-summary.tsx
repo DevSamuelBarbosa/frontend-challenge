@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router'
 import type { Quote } from '@/api/contracts'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
+import { useSession } from '@/queries/session'
 import { CouponForm } from './coupon-form'
 import { PriceBreakdown } from './price-breakdown'
 
@@ -31,6 +32,8 @@ export function OrderSummary({
   className,
   variant = 'panel',
 }: OrderSummaryProps) {
+  const { user } = useSession()
+  const checkoutLabel = user ? 'Finalizar compra' : 'Conectar e finalizar'
   const data = quote.data
   const coupon = data?.coupon ?? null
   const couponError = data?.couponError ?? null
@@ -79,7 +82,7 @@ export function OrderSummary({
         {blocked ? (
           <>
             <button type="button" disabled className={cn(ctaClass(variant), 'opacity-50')}>
-              Conectar e finalizar
+              {checkoutLabel}
             </button>
             <p role="alert" className="text-center text-xs text-required">
               Ajuste os itens indisponíveis para continuar.
@@ -87,7 +90,7 @@ export function OrderSummary({
           </>
         ) : (
           <Link to="/checkout" className={ctaClass(variant)}>
-            Conectar e finalizar
+            {checkoutLabel}
           </Link>
         )}
         <Link
