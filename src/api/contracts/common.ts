@@ -13,7 +13,9 @@ export const isoDateSchema = z.iso.datetime({ offset: true })
 /** Quantidades são sempre inteiras e positivas */
 export const quantitySchema = z.number().int().positive()
 
-export const networkSchema = z.enum(['ethereum', 'polygon', 'base'])
+export const networkSchema = z.enum(['ethereum', 'polygon', 'base'], {
+  error: 'Selecione uma rede válida',
+})
 export type Network = z.infer<typeof networkSchema>
 
 export const imageSchema = z.object({
