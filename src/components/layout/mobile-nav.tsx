@@ -20,10 +20,10 @@ export function MobileNav() {
       <div className="absolute inset-0 rounded-t-[2.5rem] bg-card mobile-nav-bar" />
       <ul className="relative grid h-full grid-cols-5 items-center px-4">
         <NavItem to="/" label="Início" active={pathname === '/'}>
-          <House className="size-6" aria-hidden fill="currentColor" />
+          <House className="size-[1.375rem]" aria-hidden fill="currentColor" />
         </NavItem>
         <NavItem to="/favorites" label="Favoritos" active={pathname === '/favorites'}>
-          <Heart className="size-6" aria-hidden fill="currentColor" />
+          <Heart className="size-[1.375rem]" aria-hidden fill="currentColor" />
         </NavItem>
         <li className="relative flex h-full justify-center">
           <UnavailableButton
@@ -35,7 +35,7 @@ export function MobileNav() {
         </li>
         <NavItem to="/cart" label={cartLabel(count)} active={pathname === '/cart'}>
           <span className="relative">
-            <ShoppingCart className="size-6" aria-hidden fill="currentColor" />
+            <ShoppingCart className="size-[1.375rem]" aria-hidden fill="currentColor" />
             {count > 0 && (
               <span
                 aria-hidden
@@ -51,7 +51,7 @@ export function MobileNav() {
           label={user ? 'Perfil' : 'Entrar'}
           active={pathname === '/profile' || pathname === '/login'}
         >
-          <UserRound className="size-6" aria-hidden fill="currentColor" />
+          <UserRound className="size-[1.375rem]" aria-hidden fill="currentColor" />
         </NavItem>
       </ul>
     </nav>

@@ -9,7 +9,7 @@ import {
 } from './common'
 
 /*
- * GET /nfts?q&category&network&minPrice&maxPrice&availability&feed&sort&page&pageSize
+ * GET /nfts?q&category&network&minPrice&maxPrice&availability&feed&featured&sort&page&pageSize
  *        -> NftList (página + contagens por coleção e rede para os filtros)
  * GET /nfts/:nftId -> Nft (404 se não existir)
  */
@@ -116,6 +116,8 @@ export const nftSummarySchema = z.object({
   priceEth: ethAmountSchema,
   /** Preço anterior da edição exibida, quando em oferta */
   compareAtPriceEth: ethAmountSchema.nullable(),
+  /** Edição do preço exibido, usada pelo "adicionar ao carrinho" do card */
+  defaultEditionId: idSchema,
   available: z.number().int().nonnegative(),
   favoritesCount: z.number().int().nonnegative(),
   version: z.number().int().nonnegative(),
@@ -156,6 +158,8 @@ export const nftListParamsSchema = z.object({
   maxPrice: ethAmountSchema.optional(),
   availability: nftAvailabilitySchema.optional(),
   feed: nftFeedSchema.optional(),
+  /** Só NFTs em destaque (vitrine da tela inicial) */
+  featured: z.boolean().optional(),
   sort: nftSortSchema.optional(),
   page: z.number().int().positive().optional(),
   pageSize: z.number().int().positive().max(48).optional(),

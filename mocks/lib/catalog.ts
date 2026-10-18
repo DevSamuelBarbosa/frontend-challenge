@@ -19,6 +19,7 @@ export function toNftSummary(nft: Nft): NftSummary {
     image: nft.images[0],
     priceEth: cheapest.priceEth,
     compareAtPriceEth: cheapest.compareAtPriceEth,
+    defaultEditionId: cheapest.id,
     available: nft.editions.reduce((total, e) => total + e.available, 0),
     favoritesCount: nft.favoritesCount,
     version: nft.version,

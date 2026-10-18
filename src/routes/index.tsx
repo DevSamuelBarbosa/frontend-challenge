@@ -1,6 +1,10 @@
-import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
+import { useCallback } from 'react'
+import { CatalogSearchBar, CatalogSection } from '@/features/catalog/components/catalog-section'
+import { Hero } from '@/features/catalog/components/hero'
 import {
+  applyCatalogChange,
+  type CatalogSearch,
   catalogSearchDefaults,
   catalogSearchSchema,
   toNftListParams,
@@ -21,27 +25,42 @@ export const Route = createFileRoute('/')({
 
 function HomePage() {
   const search = Route.useSearch()
-  const { data, status, isPlaceholderData, error } = useQuery(
-    nftListQueryOptions(toNftListParams(search)),
+  const navigate = Route.useNavigate()
+
+  // Cada mudança vira uma entrada no histórico: voltar e avançar restauram o catálogo
+  const onChange = useCallback(
+    (change: Partial<Omit<CatalogSearch, 'page'>>) =>
+      void navigate({
+        search: (prev) => applyCatalogChange(prev, change),
+        resetScroll: false,
+      }),
+    [navigate],
+  )
+  const onPageChange = useCallback(
+    (page: number) => void navigate({ search: (prev) => ({ ...prev, page }), resetScroll: false }),
+    [navigate],
+  )
+  const onClearFilters = useCallback(
+    () =>
+      void navigate({
+        search: (prev) => ({ ...catalogSearchDefaults, feed: prev.feed, sort: prev.sort }),
+        resetScroll: false,
+      }),
+    [navigate],
   )
 
-  // Renderização provisória: a tela do Figma substitui esta lista
   return (
     <>
-      <h1 className="text-2xl font-bold">Início</h1>
-      <p aria-live="polite">
-        {status === 'pending' && 'Carregando…'}
-        {status === 'error' && `Erro: ${error.message}`}
-        {status === 'success' &&
-          `${data.total} NFTs · página ${data.page} de ${Math.max(data.totalPages, 1)}${isPlaceholderData ? ' · atualizando…' : ''}`}
-      </p>
-      <ul>
-        {data?.items.map((nft) => (
-          <li key={nft.id}>
-            {nft.name} · {nft.priceEth} ETH
-          </li>
-        ))}
-      </ul>
+      <div className="page-container pt-4 md:hidden">
+        <CatalogSearchBar search={search} onChange={onChange} className="mb-0" />
+      </div>
+      <Hero />
+      <CatalogSection
+        search={search}
+        onChange={onChange}
+        onPageChange={onPageChange}
+        onClearFilters={onClearFilters}
+      />
     </>
   )
 }

@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-query'
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import { useCallback } from 'react'
+import { toast } from 'sonner'
 import type { FavoriteList, Nft, NftSummary } from '@/api/contracts'
 import { addFavorite, getFavorites, removeFavorite } from '@/api/favorites'
 import { queryKeys } from './keys'
@@ -121,7 +122,18 @@ export function useFavorites() {
         void navigate({ to: '/login', search: { redirect: location.href } })
         return
       }
-      mutate({ nftId, favorite: !isFavorite(nftId) })
+      const favorite = !isFavorite(nftId)
+      mutate(
+        { nftId, favorite },
+        {
+          onError: () =>
+            toast.error(
+              favorite
+                ? 'Não foi possível favoritar. Tente novamente.'
+                : 'Não foi possível remover dos favoritos. Tente novamente.',
+            ),
+        },
+      )
     },
     [user, navigate, location.href, mutate, isFavorite],
   )

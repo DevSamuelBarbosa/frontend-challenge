@@ -6,6 +6,7 @@ import { MobileNav } from '@/components/layout/mobile-nav'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { SessionWatcher } from '@/components/session-watcher'
+import { Toaster } from '@/components/ui/sonner'
 import { RealtimeConnection } from '@/realtime/realtime-connection'
 
 export interface RouterContext {
@@ -33,6 +34,7 @@ function RootLayout() {
       </main>
       <SiteFooter />
       <MobileNav />
+      <Toaster />
       {import.meta.env.DEV && (
         <>
           <TanStackRouterDevtools position="bottom-right" />

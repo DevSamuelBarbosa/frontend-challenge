@@ -40,6 +40,7 @@ function readParams(url: URL) {
     maxPrice: get('maxPrice'),
     availability: get('availability'),
     feed: get('feed'),
+    featured: get('featured') === undefined ? undefined : get('featured') === 'true',
     sort: get('sort'),
     page: toInt(get('page')),
     pageSize: toInt(get('pageSize')),
@@ -49,11 +50,12 @@ function readParams(url: URL) {
 interface Entry {
   summary: NftSummary
   tags: string[]
+  featured: boolean
 }
 
 /** Filtros, com a opção de ignorar um deles (para contar as opções desse filtro) */
 function matches(
-  { summary: item, tags }: Entry,
+  { summary: item, tags, featured }: Entry,
   params: NftListParams,
   newestDate: number,
   ignore?: 'category' | 'network',
@@ -77,6 +79,7 @@ function matches(
     return false
   }
   if (params.feed === 'trending' && item.favoritesCount < TRENDING_MIN_FAVORITES) return false
+  if (params.featured !== undefined && featured !== params.featured) return false
   return true
 }
 
@@ -139,6 +142,7 @@ export const nftHandlers = [
     const entries: Entry[] = db.state.nfts.map((nft) => ({
       summary: toNftSummary(nft),
       tags: nft.tags,
+      featured: nft.featured,
     }))
     const newestDate = Math.max(...entries.map((e) => Date.parse(e.summary.createdAt)), 0)
 

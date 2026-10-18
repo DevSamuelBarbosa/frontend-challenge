@@ -113,3 +113,44 @@
 @utility mobile-nav-bar {
   mask: radial-gradient(circle 2.875rem at 50% 0.4rem, transparent 98%, #000 100%);
 }
+
+/*
+ * Shimmer dos skeletons. Sem animação para quem prefere menos movimento.
+ * Nome próprio: o shadcn/tailwind.css já define um `shimmer` para texto (background-clip: text).
+ */
+@utility skeleton-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    transparent 20%,
+    color-mix(in srgb, var(--kurio-foreground) 7%, transparent) 50%,
+    transparent 80%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: shimmer 1.6s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+/* Respeita a preferência por menos movimento em todo o site */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

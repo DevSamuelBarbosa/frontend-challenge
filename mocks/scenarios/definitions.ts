@@ -46,13 +46,14 @@ export const scenarios = [
   },
   {
     name: 'server-error',
-    description: 'O catálogo falha 3 vezes com 503 e depois se recupera (testa nova tentativa)',
+    description:
+      'O catálogo responde 503 nas 6 primeiras consultas (as 3 tentativas da grade e do destaque) e depois se recupera',
     latency: 200,
     rules: [
       {
         method: 'GET',
         path: '/nfts*',
-        times: 3,
+        times: 6,
         effect: {
           type: 'error',
           status: 503,
