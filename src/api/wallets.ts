@@ -1,6 +1,8 @@
 import { z } from 'zod'
 import {
+  type CreateWalletRequest,
   type Network,
+  type UpdateWalletRequest,
   type Wallet,
   type WalletConnection,
   walletConnectionSchema,
@@ -23,4 +25,14 @@ export async function connectWallet(walletId: string, network: Network): Promise
 
 export async function disconnectWallet(walletId: string): Promise<void> {
   await api.delete(`/wallets/${encodeURIComponent(walletId)}/connection`)
+}
+
+export async function createWallet(body: CreateWalletRequest): Promise<Wallet> {
+  const { data } = await api.post('/wallets', body)
+  return parseResponse(walletSchema, data)
+}
+
+export async function updateWallet(walletId: string, body: UpdateWalletRequest): Promise<Wallet> {
+  const { data } = await api.patch(`/wallets/${encodeURIComponent(walletId)}`, body)
+  return parseResponse(walletSchema, data)
 }

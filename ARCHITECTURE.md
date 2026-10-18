@@ -190,3 +190,11 @@ Onde o design e os requisitos do desafio conflitam ou o design é ambíguo, a de
 - Os erros dos formulários aparecem só após a primeira tentativa de envio. Validar ao sair do campo deslocava o layout no meio do clique em outro elemento (ex.: a aba "Criar conta"), e o clique se perdia.
 - Cliques seguidos em "Entrar"/"Criar conta" geram uma única requisição (`useSingleFlight`), e o envio nativo do navegador é sempre cancelado, para a senha nunca ir para a URL.
 - Login social e "Esqueceu a senha?" ficam desabilitados (fora do escopo).
+
+**Conta (perfil, carteiras e lista de interesse)**
+
+- As três telas dividem o menu "Meu perfil" (`AccountLayout`): barra lateral no desktop e faixa rolável no topo no celular, onde o Figma não tem frame. Atividade, Ofertas, Arquivos baixados e Suporte ficam desabilitados.
+- "Dados do perfil" também edita o apelido da carteira principal e a senha, num só "Salvar": primeiro o perfil, depois a senha. Se a senha falhar (ex.: senha atual incorreta), o perfil já está salvo e o que foi digitado continua na tela. O avatar é salvo na hora, fora do "Salvar".
+- Em "Carteiras", Nome de exibição, E-mail e Nome ENS aparecem só para leitura, com o aviso para editar em Dados do perfil, para existir uma única fonte desses dados. Os dados de colecionador próprios da carteira (nome do perfil, código de indicação e ENS ou carteira secundária de entrega) foram acrescentados ao contrato de carteira.
+- "Rede" é um grupo de seleção (uma carteira pode ter várias redes), no lugar do seletor do design, que só permitiria uma. "Igual à carteira principal" é uma preferência só da tela: a API não permite duas carteiras com o mesmo endereço.
+- O nome ENS é editado com o seletor ".eth" do design e é sempre validado como nome completo (`ana.eth`), com a mesma regra do pagamento.

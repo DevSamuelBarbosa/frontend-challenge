@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { secondaryWalletSchema } from './identity'
 import { idSchema, isoDateSchema, networkSchema } from './common'
 
 /*
@@ -13,7 +14,9 @@ import { idSchema, isoDateSchema, networkSchema } from './common'
  * DELETE /wallets/:walletId/connection                       -> 204
  */
 
-export const walletProviderSchema = z.enum(['metamask', 'coinbase', 'walletconnect', 'phantom'])
+export const walletProviderSchema = z.enum(['metamask', 'coinbase', 'walletconnect', 'phantom'], {
+  error: 'Selecione o tipo de carteira',
+})
 export type WalletProvider = z.infer<typeof walletProviderSchema>
 
 /** Cada colecionador tem no máximo uma carteira principal e uma secundária */
@@ -32,6 +35,11 @@ export const walletSchema = z.object({
   provider: walletProviderSchema,
   address: walletAddressSchema,
   networks: z.array(networkSchema).min(1),
+  /** Dados do colecionador cadastrados junto da carteira (tela Carteiras) */
+  profileName: z.string(),
+  referralCode: z.string(),
+  /** ENS ou carteira secundária que recebe os NFTs. Vazio = a própria carteira. */
+  secondaryTarget: z.string(),
   createdAt: isoDateSchema,
   updatedAt: isoDateSchema,
 })
@@ -42,7 +50,17 @@ export const createWalletRequestSchema = z.object({
   label: z.string().trim().min(2, 'Informe um nome para a carteira').max(40),
   provider: walletProviderSchema,
   address: walletAddressSchema,
-  networks: z.array(networkSchema).min(1, 'Selecione pelo menos uma rede'),
+  networks: z.array(networkSchema).min(1, 'Selecione uma rede'),
+  profileName: z
+    .string()
+    .trim()
+    .min(2, 'Informe o nome do perfil')
+    .max(60, 'Use no máximo 60 caracteres'),
+  referralCode: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z0-9-]{3,20}$/, 'Informe o código de indicação (3 a 20 letras, números ou -)'),
+  secondaryTarget: secondaryWalletSchema,
 })
 export type CreateWalletRequest = z.infer<typeof createWalletRequestSchema>
 

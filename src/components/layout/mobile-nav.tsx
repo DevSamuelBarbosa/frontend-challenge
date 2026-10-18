@@ -51,7 +51,7 @@ export function MobileNav() {
         <NavItem
           to={user ? '/profile' : '/login'}
           label={user ? 'Perfil' : 'Entrar'}
-          active={pathname === '/profile' || pathname === '/login'}
+          active={['/profile', '/wallets', '/login'].includes(pathname)}
         >
           <UserRound className="size-[1.375rem]" aria-hidden fill="currentColor" />
         </NavItem>

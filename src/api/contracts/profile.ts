@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { idSchema, isoDateSchema } from './common'
 import { passwordSchema } from './auth'
+import { ensNameSchema } from './identity'
 
 /*
  * Requer autenticação.
@@ -33,7 +34,9 @@ export const updateProfileRequestSchema = z.object({
     .trim()
     .regex(/^[a-z0-9_]{3,20}$/, 'Use de 3 a 20 caracteres: letras minúsculas, números ou _'),
   email: z.email('Informe um e-mail válido'),
-  bio: z.string().trim().max(280, 'A bio deve ter no máximo 280 caracteres'),
+  ensName: ensNameSchema,
+  /** A tela de perfil não edita a bio: sem ela, o valor atual é mantido */
+  bio: z.string().trim().max(280, 'A bio deve ter no máximo 280 caracteres').optional(),
 })
 export type UpdateProfileRequest = z.infer<typeof updateProfileRequestSchema>
 
