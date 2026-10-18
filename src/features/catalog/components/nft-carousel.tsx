@@ -82,11 +82,7 @@ export function NftCarousel({ title, params, excludeIds = [] }: NftCarouselProps
       </ul>
 
       {pages > 1 && (
-        <div
-          role="group"
-          aria-label="Páginas do carrossel"
-          className="mt-6 flex justify-center gap-3"
-        >
+        <div role="group" aria-label="Páginas do carrossel" className="mt-6 flex justify-center">
           {Array.from({ length: pages }, (_, index) => (
             <button
               key={index}
@@ -94,11 +90,17 @@ export function NftCarousel({ title, params, excludeIds = [] }: NftCarouselProps
               onClick={() => goTo(index)}
               aria-label={`Ir para a página ${index + 1} de ${pages}`}
               aria-current={index === page ? 'true' : undefined}
-              className={cn(
-                'size-3 rounded-full border border-primary transition-colors',
-                index === page ? 'bg-primary' : 'bg-transparent hover:bg-primary/40',
-              )}
-            />
+              // A área de toque tem 24 px (WCAG 2.2); o ponto desenhado continua com 12 px
+              className="group grid size-6 place-items-center"
+            >
+              <span
+                aria-hidden
+                className={cn(
+                  'size-3 rounded-full border border-primary transition-colors',
+                  index === page ? 'bg-primary' : 'bg-transparent group-hover:bg-primary/40',
+                )}
+              />
+            </button>
           ))}
         </div>
       )}

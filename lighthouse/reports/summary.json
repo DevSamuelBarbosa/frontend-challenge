@@ -1,0 +1,329 @@
+{
+  "environment": {
+    "generatedAt": "2026-10-18T23:16:07.962Z",
+    "lighthouse": "13.5.0",
+    "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+    "node": "v22.14.0",
+    "os": "Linux 6.8.0-146-generic (x64)",
+    "cpu": "Intel(R) Core(TM) i5-7400 CPU @ 3.00GHz × 4",
+    "memoryGb": 16,
+    "app": "nft-marketplace@0.0.0",
+    "conditions": "Build de produção (vite build + vite preview), API simulada com MSW no cenário padrão, Chrome headless novo por medição (perfil limpo), throttling simulado do Lighthouse (simulate), 3 medições por página e perfil, mediana reportada."
+  },
+  "targets": {
+    "performance": 90,
+    "accessibility": 95,
+    "best-practices": 95,
+    "seo": 90
+  },
+  "summary": [
+    {
+      "page": "Início",
+      "path": "/",
+      "profile": "Mobile",
+      "runs": [
+        {
+          "scores": {
+            "performance": 82,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "lcp": 3331.3433750000004,
+          "cls": 0,
+          "tbt": 349,
+          "fcp": 2105.4770000000008,
+          "si": 2168.516061721806,
+          "file": "inicio-mobile-1",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+          "emulation": "mobile",
+          "throttling": "simulate",
+          "kept": false
+        },
+        {
+          "scores": {
+            "performance": 83,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "lcp": 3407.4621,
+          "cls": 0,
+          "tbt": 299,
+          "fcp": 2124.6414,
+          "si": 2168.7963783109135,
+          "file": "inicio-mobile-2",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+          "emulation": "mobile",
+          "throttling": "simulate",
+          "kept": true
+        },
+        {
+          "scores": {
+            "performance": 83,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "lcp": 3427.2194,
+          "cls": 0,
+          "tbt": 315.5,
+          "fcp": 2120.4796,
+          "si": 2169.224120700831,
+          "file": "inicio-mobile-3",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+          "emulation": "mobile",
+          "throttling": "simulate",
+          "kept": false
+        }
+      ],
+      "median": {
+        "scores": {
+          "performance": 83,
+          "accessibility": 100,
+          "best-practices": 100,
+          "seo": 100
+        },
+        "lcp": 3407.4621,
+        "cls": 0,
+        "tbt": 315.5,
+        "fcp": 2120.4796,
+        "si": 2168.7963783109135
+      }
+    },
+    {
+      "page": "Início",
+      "path": "/",
+      "profile": "Desktop",
+      "runs": [
+        {
+          "scores": {
+            "performance": 98,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "lcp": 1080.3494500000002,
+          "cls": 0.0001540030496185291,
+          "tbt": 10,
+          "fcp": 739.8188500000001,
+          "si": 804.7438856940643,
+          "file": "inicio-desktop-1",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+          "emulation": "desktop",
+          "throttling": "simulate",
+          "kept": false
+        },
+        {
+          "scores": {
+            "performance": 98,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "lcp": 1028.0556,
+          "cls": 0.0001540030496185291,
+          "tbt": 10,
+          "fcp": 729.4167,
+          "si": 775.6945727133323,
+          "file": "inicio-desktop-2",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+          "emulation": "desktop",
+          "throttling": "simulate",
+          "kept": true
+        },
+        {
+          "scores": {
+            "performance": 98,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "lcp": 1078.598775,
+          "cls": 0.0001540030496185291,
+          "tbt": 10.5,
+          "fcp": 735.3760750000001,
+          "si": 841.5618186889851,
+          "file": "inicio-desktop-3",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+          "emulation": "desktop",
+          "throttling": "simulate",
+          "kept": false
+        }
+      ],
+      "median": {
+        "scores": {
+          "performance": 98,
+          "accessibility": 100,
+          "best-practices": 100,
+          "seo": 100
+        },
+        "lcp": 1078.598775,
+        "cls": 0.0001540030496185291,
+        "tbt": 10,
+        "fcp": 735.3760750000001,
+        "si": 804.7438856940643
+      }
+    },
+    {
+      "page": "Detalhe do NFT",
+      "path": "/nfts/nft-001",
+      "profile": "Mobile",
+      "runs": [
+        {
+          "scores": {
+            "performance": 85,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "lcp": 3541.4505,
+          "cls": 0,
+          "tbt": 206,
+          "fcp": 2324.1075,
+          "si": 2414.27697634263,
+          "file": "detalhe-mobile-1",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+          "emulation": "mobile",
+          "throttling": "simulate",
+          "kept": true
+        },
+        {
+          "scores": {
+            "performance": 76,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "lcp": 3788.12825,
+          "cls": 0,
+          "tbt": 400.95512500000007,
+          "fcp": 2322.903875,
+          "si": 2866.7627674152054,
+          "file": "detalhe-mobile-2",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+          "emulation": "mobile",
+          "throttling": "simulate",
+          "kept": false
+        },
+        {
+          "scores": {
+            "performance": 86,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "lcp": 3559.5415500000004,
+          "cls": 0,
+          "tbt": 166.89582500000006,
+          "fcp": 2196.062425,
+          "si": 2399.811572701703,
+          "file": "detalhe-mobile-3",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+          "emulation": "mobile",
+          "throttling": "simulate",
+          "kept": false
+        }
+      ],
+      "median": {
+        "scores": {
+          "performance": 85,
+          "accessibility": 100,
+          "best-practices": 100,
+          "seo": 100
+        },
+        "lcp": 3559.5415500000004,
+        "cls": 0,
+        "tbt": 206,
+        "fcp": 2322.903875,
+        "si": 2414.27697634263
+      }
+    },
+    {
+      "page": "Detalhe do NFT",
+      "path": "/nfts/nft-001",
+      "profile": "Desktop",
+      "runs": [
+        {
+          "scores": {
+            "performance": 98,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "lcp": 1046.4517,
+          "cls": 0.00536360388624905,
+          "tbt": 0,
+          "fcp": 713.9655,
+          "si": 843.8826095756738,
+          "file": "detalhe-desktop-1",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+          "emulation": "desktop",
+          "throttling": "simulate",
+          "kept": false
+        },
+        {
+          "scores": {
+            "performance": 98,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "lcp": 1095.1675500000001,
+          "cls": 0.00536360388624905,
+          "tbt": 0,
+          "fcp": 754.04825,
+          "si": 858.8534125617616,
+          "file": "detalhe-desktop-2",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+          "emulation": "desktop",
+          "throttling": "simulate",
+          "kept": true
+        },
+        {
+          "scores": {
+            "performance": 98,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "lcp": 1042.6638,
+          "cls": 0.00536360388624905,
+          "tbt": 0,
+          "fcp": 715.617,
+          "si": 790.671024299274,
+          "file": "detalhe-desktop-3",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+          "emulation": "desktop",
+          "throttling": "simulate",
+          "kept": false
+        }
+      ],
+      "median": {
+        "scores": {
+          "performance": 98,
+          "accessibility": 100,
+          "best-practices": 100,
+          "seo": 100
+        },
+        "lcp": 1046.4517,
+        "cls": 0.00536360388624905,
+        "tbt": 0,
+        "fcp": 715.617,
+        "si": 843.8826095756738
+      }
+    }
+  ]
+}

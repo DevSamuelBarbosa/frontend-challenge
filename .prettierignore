@@ -7,3 +7,4 @@ public/mockServiceWorker.js
 .claude
 playwright-report
 test-results
+lighthouse/reports

@@ -124,7 +124,7 @@ function SlideDots({
   className?: string
 }) {
   return (
-    <div className={cn('flex gap-2', className)}>
+    <div className={cn('flex', className)}>
       {SLIDES.map((slide, index) => (
         <button
           key={slide.artwork}
@@ -132,11 +132,17 @@ function SlideDots({
           onClick={() => onSelect(index)}
           aria-label={`Mostrar destaque ${index + 1} de ${SLIDES.length}`}
           aria-current={index === current ? 'true' : undefined}
-          className={cn(
-            'size-2 rounded-full bg-primary transition-opacity',
-            index === current ? 'opacity-100' : 'opacity-50 hover:opacity-80',
-          )}
-        />
+          // A área de toque tem 24 px (WCAG 2.2); o ponto desenhado continua com 8 px
+          className="group grid size-6 place-items-center"
+        >
+          <span
+            aria-hidden
+            className={cn(
+              'size-2 rounded-full bg-primary transition-opacity',
+              index === current ? 'opacity-100' : 'opacity-50 group-hover:opacity-80',
+            )}
+          />
+        </button>
       ))}
     </div>
   )
