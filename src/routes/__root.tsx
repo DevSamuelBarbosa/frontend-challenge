@@ -1,7 +1,10 @@
 import type { QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router'
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { MobileNav } from '@/components/layout/mobile-nav'
+import { SiteFooter } from '@/components/layout/site-footer'
+import { SiteHeader } from '@/components/layout/site-header'
 import { SessionWatcher } from '@/components/session-watcher'
 import { RealtimeConnection } from '@/realtime/realtime-connection'
 
@@ -13,39 +16,23 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
 })
 
-// Navegação provisória, será substituída pelo header do Figma
-const links = [
-  { to: '/', label: 'Início' },
-  { to: '/cart', label: 'Carrinho' },
-  { to: '/checkout', label: 'Pagamento' },
-  { to: '/login', label: 'Login' },
-  { to: '/register', label: 'Cadastro' },
-  { to: '/profile', label: 'Perfil' },
-  { to: '/wallets', label: 'Carteiras' },
-] as const
-
 function RootLayout() {
   return (
     <>
       <SessionWatcher />
       <RealtimeConnection />
-      <header className="border-b">
-        <nav aria-label="Principal" className="flex flex-wrap gap-4 p-4">
-          {links.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="[&.active]:font-bold"
-              activeOptions={{ exact: link.to === '/' }}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-      </header>
-      <main className="p-4">
+      <a
+        href="#conteudo"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+      >
+        Pular para o conteúdo
+      </a>
+      <SiteHeader />
+      <main id="conteudo" tabIndex={-1} className="outline-none">
         <Outlet />
       </main>
+      <SiteFooter />
+      <MobileNav />
       {import.meta.env.DEV && (
         <>
           <TanStackRouterDevtools position="bottom-right" />
