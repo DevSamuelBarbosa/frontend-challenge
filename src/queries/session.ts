@@ -91,10 +91,11 @@ export function syncSessionWithToken(queryClient: QueryClient) {
       queryClient.setQueryData(queryKeys.session, null)
       return
     }
-    // Outra aba entrou com outro token: busca a sessão correspondente
+    // Outra aba entrou com outro token: descarta a sessão antiga e busca a nova.
+    // `reset` (e não `invalidate`) para ninguém ler a sessão anterior enquanto isso.
     if (event.type === 'changed' && event.token !== current?.token) {
       void clearPrivateData(queryClient)
-      void queryClient.invalidateQueries({ queryKey: queryKeys.session })
+      void queryClient.resetQueries({ queryKey: queryKeys.session })
     }
   })
 }

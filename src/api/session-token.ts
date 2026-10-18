@@ -23,6 +23,8 @@ function storage(): Storage | null {
 }
 
 let token: string | null = storage()?.getItem(STORAGE_KEY) ?? null
+/** Motivo do último encerramento pela API, lido uma vez pela tela de login */
+let lastEndReason: SessionEndReason | null = null
 
 function emit(event: SessionTokenEvent) {
   listeners.forEach((listener) => listener(event))
@@ -34,6 +36,7 @@ export const sessionToken = {
   set(next: string | null) {
     if (next === token) return
     token = next
+    if (next) lastEndReason = null
     try {
       if (next) storage()?.setItem(STORAGE_KEY, next)
       else storage()?.removeItem(STORAGE_KEY)
@@ -46,8 +49,16 @@ export const sessionToken = {
   /** A API recusou a sessão (expirada ou inválida): descarta o token e avisa */
   end(reason: SessionEndReason) {
     if (!token) return
+    lastEndReason = reason
     sessionToken.set(null)
     emit({ type: 'ended', reason })
+  },
+
+  /** Retorna e esquece o motivo do último encerramento */
+  takeEndReason() {
+    const reason = lastEndReason
+    lastEndReason = null
+    return reason
   },
 
   subscribe(listener: Listener) {
