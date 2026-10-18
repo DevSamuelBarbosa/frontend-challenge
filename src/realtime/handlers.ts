@@ -1,4 +1,4 @@
-import type { QueryClient } from '@tanstack/react-query'
+import type { Query, QueryClient } from '@tanstack/react-query'
 import type {
   Cart,
   FavoriteList,
@@ -8,6 +8,7 @@ import type {
   NftUpdatedEvent,
   Order,
   OrderUpdatedEvent,
+  Quote,
 } from '@/api/contracts'
 import { compareEth } from '@/lib/eth'
 import { queryKeys } from '@/queries/keys'
@@ -84,8 +85,16 @@ export function applyNftUpdated(queryClient: QueryClient, event: NftUpdatedEvent
     return changed ? { ...cart, items } : cart
   })
 
-  // O resumo de valores vem da cotação: com o carrinho alterado, ela é refeita
-  if (anyCartChanged) {
+  // O resumo de valores vem da cotação: ela é refeita se o carrinho mudou ou se
+  // alguma cotação em cache tem o NFT numa versão anterior (ex.: na tela de pagamento,
+  // onde só a cotação está carregada)
+  const quoteIsStale = (q: Query) =>
+    q.queryKey[0] === 'user' &&
+    q.queryKey[2] === 'quote' &&
+    (q.state.data as Quote | undefined)?.lines.some(
+      (line) => line.nftId === nftId && line.nftVersion < event.version,
+    ) === true
+  if (anyCartChanged || queryClient.getQueryCache().findAll({ predicate: quoteIsStale }).length) {
     void queryClient.invalidateQueries({
       predicate: (q) => q.queryKey[0] === 'user' && q.queryKey[2] === 'quote',
     })

@@ -31,7 +31,6 @@ function applyUrlControls() {
 
 export async function startMockWorker() {
   applyUrlControls()
-  window.__mocks = mockControls
 
   await worker.start({
     serviceWorker: { url: `${import.meta.env.BASE_URL}mockServiceWorker.js` },
@@ -43,4 +42,6 @@ export async function startMockWorker() {
     },
   })
   resumePendingOrders()
+  // Exposto só depois do worker ativo: quem espera por `__mocks` já pode chamar a API
+  window.__mocks = mockControls
 }

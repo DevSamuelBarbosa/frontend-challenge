@@ -10,6 +10,7 @@ import * as authApi from '@/api/auth'
 import type { Session } from '@/api/contracts'
 import { isApiError } from '@/api/errors'
 import { sessionToken } from '@/api/session-token'
+import { checkoutStore } from '@/features/checkout/store'
 import { queryKeys } from './keys'
 
 /**
@@ -72,7 +73,13 @@ export const logoutMutationOptions = (queryClient: QueryClient) =>
   mutationOptions({
     // Mesmo se a API falhar, a sessão local é encerrada
     mutationFn: () => authApi.logout().catch(() => undefined),
-    onSettled: () => endSession(queryClient),
+    onSettled: () => {
+      // Logout explícito descarta o pagamento em andamento. Na expiração da sessão
+      // ele é mantido, para o mesmo usuário retomar depois do login.
+      const userId = queryClient.getQueryData<Session | null>(queryKeys.session)?.user.id
+      if (userId) checkoutStore(userId).clear()
+      return endSession(queryClient)
+    },
   })
 
 export const useLogin = () => useMutation(loginMutationOptions(useQueryClient()))
