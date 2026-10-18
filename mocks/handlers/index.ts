@@ -5,7 +5,9 @@ import { cartHandlers } from './cart'
 import { favoriteHandlers } from './favorites'
 import { nftHandlers } from './nfts'
 import { orderHandlers } from './orders'
+import { profileHandlers } from './profile'
 import { quoteHandlers } from './quote'
+import { walletHandlers } from './wallets'
 
 export const handlers = [
   // Verificação rápida de que os mocks estão ativos
@@ -16,4 +18,6 @@ export const handlers = [
   ...cartHandlers,
   ...quoteHandlers,
   ...orderHandlers,
+  ...profileHandlers,
+  ...walletHandlers,
 ]

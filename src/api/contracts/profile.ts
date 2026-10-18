@@ -6,8 +6,10 @@ import { passwordSchema } from './auth'
  * Requer autenticação.
  * GET   /profile                                   -> Profile
  * PATCH /profile           UpdateProfileRequest    -> Profile (409 se o username já existir)
- * PUT   /profile/avatar    multipart (campo `file`) -> Profile
- * PUT   /profile/password  ChangePasswordRequest   -> 204 (400 se a senha atual estiver errada)
+ * PUT   /profile/avatar    multipart (campo `file`) -> Profile (400 se o tipo ou tamanho for inválido)
+ * DELETE /profile/avatar                            -> Profile
+ * PUT   /profile/password  ChangePasswordRequest   -> 204 (400 se a senha atual estiver errada;
+ *                                                    as outras sessões do usuário são encerradas)
  */
 
 export const profileSchema = z.object({
