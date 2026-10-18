@@ -52,7 +52,11 @@ export class App {
    */
   api<T>(path: string) {
     return this.page.evaluate(async (url) => {
-      const response = await fetch(url)
+      // Mesma identificação da aplicação: o token da sessão, se houver
+      const token = localStorage.getItem('nft-marketplace:session-token')
+      const response = await fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
       return response.json()
     }, `/api${path}`) as Promise<T>
   }
@@ -75,6 +79,25 @@ export class App {
     await form.getByPlaceholder('Senha').fill(user.password)
     await form.getByRole('button', { name: 'Entrar' }).click()
     await expect(this.page).toHaveURL(redirect ?? '/')
+  }
+
+  /** Sai pelo menu da conta, como o usuário faria */
+  async logout() {
+    await this.goto('/profile')
+    await this.page
+      .getByRole('navigation', { name: 'Minha conta' })
+      .getByRole('button', { name: 'Sair' })
+      .click()
+    await expect(this.page).toHaveURL('/')
+  }
+
+  /** Formulário de login, no modal (desktop) ou na página (celular) */
+  loginForm() {
+    return this.page.getByRole('form', { name: 'Entrar na conta' })
+  }
+
+  registerForm() {
+    return this.page.getByRole('form', { name: 'Criar conta' })
   }
 }
 

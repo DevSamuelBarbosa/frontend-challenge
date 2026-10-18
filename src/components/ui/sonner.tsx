@@ -10,6 +10,9 @@ function Toaster(props: ToasterProps) {
     <Sonner
       theme="dark"
       position="top-right"
+      // No celular os toasts ocupam a largura toda: começam abaixo das ações do topo
+      // (voltar, favoritar, busca), para não cobrir o botão que o usuário vai tocar de novo
+      mobileOffset={{ top: '4.5rem' }}
       closeButton
       containerAriaLabel="Notificações"
       toastOptions={{
