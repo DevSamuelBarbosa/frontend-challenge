@@ -1,6 +1,12 @@
 import { HttpResponse } from 'msw'
-import { createWalletRequestSchema, updateWalletRequestSchema, walletSchema } from '@/api/contracts'
-import { db } from '../db'
+import {
+  connectWalletRequestSchema,
+  createWalletRequestSchema,
+  updateWalletRequestSchema,
+  walletConnectionSchema,
+  walletSchema,
+} from '@/api/contracts'
+import { db, type MockWalletConnection } from '../db'
 import type { MockWallet } from '../fixtures'
 import { api } from '../lib/http'
 import { errorResponse, parseBody } from '../lib/responses'
@@ -57,6 +63,42 @@ export const walletHandlers = [
       draft.wallets.push(wallet)
     })
     return HttpResponse.json(toWallet(wallet), { status: 201 })
+  }),
+
+  // Simula a carteira pedindo autorização ao usuário (o cenário `wallet-rejected` recusa)
+  api.post('/wallets/:walletId/connection', async ({ request, params }) => {
+    const { user } = requireSession(request)
+    const { network } = await parseBody(request, connectWalletRequestSchema)
+    const wallet = userWallets(user.id).find((w) => w.id === params.walletId)
+    if (!wallet) return errorResponse('not_found', 'Carteira não encontrada')
+    if (!wallet.networks.includes(network)) {
+      return errorResponse('validation_error', 'A carteira não suporta a rede selecionada', {
+        fields: { network: 'Esta carteira não está habilitada para a rede escolhida' },
+      })
+    }
+
+    const connection: MockWalletConnection = {
+      walletId: wallet.id,
+      userId: user.id,
+      network,
+      connectedAt: new Date().toISOString(),
+    }
+    db.update((draft) => {
+      // Uma conexão ativa por usuário: conectar outra carteira desconecta a anterior
+      draft.walletConnections = draft.walletConnections.filter((c) => c.userId !== user.id)
+      draft.walletConnections.push(connection)
+    })
+    return HttpResponse.json(walletConnectionSchema.parse(connection))
+  }),
+
+  api.delete('/wallets/:walletId/connection', ({ request, params }) => {
+    const { user } = requireSession(request)
+    db.update((draft) => {
+      draft.walletConnections = draft.walletConnections.filter(
+        (c) => !(c.userId === user.id && c.walletId === params.walletId),
+      )
+    })
+    return new HttpResponse(null, { status: 204 })
   }),
 
   api.patch('/wallets/:walletId', async ({ request, params }) => {

@@ -60,7 +60,12 @@ export const cartChangeMutationOptions = (queryClient: QueryClient, getOwner: ()
     scope: { id: 'cart' },
     mutationFn: runChange,
     onSuccess: (cart) => {
-      queryClient.setQueryData(cartQueryKey(getOwner()), cart)
+      const owner = getOwner()
+      queryClient.setQueryData(cartQueryKey(owner), cart)
+      // O resumo de valores depende do carrinho: a cotação é refeita
+      if (owner.type === 'user') {
+        void queryClient.invalidateQueries({ queryKey: queryKeys.user.quote(owner.userId) })
+      }
     },
   })
 

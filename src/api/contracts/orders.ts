@@ -9,6 +9,7 @@ import { walletProviderSchema } from './wallets'
  *   - mesma chave e mesmo conteúdo: devolve o pedido já criado
  *   - mesma chave e conteúdo diferente: 409
  *   - cotação divergente do catálogo: 409 com o código `quote_outdated`
+ *   - carteira não conectada na rede do pedido: 409 com o código `wallet_not_connected`
  * GET  /orders?status                                      -> Order[] (mais recentes primeiro)
  * GET  /orders/:orderId                                     -> Order
  */

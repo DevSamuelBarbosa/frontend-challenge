@@ -148,6 +148,24 @@ export const scenarios = [
     realtime: { offline: true },
   },
   {
+    name: 'wallet-rejected',
+    description: 'O usuário recusa a conexão na carteira',
+    latency: { min: 120, max: 320 },
+    rules: [
+      {
+        method: 'POST',
+        path: '/wallets/:walletId/connection',
+        effect: {
+          type: 'error',
+          status: 403,
+          code: 'forbidden',
+          message: 'A conexão foi recusada na carteira',
+          details: { reason: 'wallet_rejected' },
+        },
+      },
+    ],
+  },
+  {
     name: 'payment-rejected',
     description: 'A carteira recusa o pagamento',
     latency: { min: 120, max: 320 },

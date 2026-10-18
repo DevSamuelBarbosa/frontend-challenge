@@ -71,6 +71,15 @@ export const orderHandlers = [
       })
     }
 
+    const connected = db.state.walletConnections.some(
+      (c) => c.userId === user.id && c.walletId === wallet.id && c.network === body.network,
+    )
+    if (!connected) {
+      return errorResponse('conflict', 'Conecte a carteira na rede selecionada para continuar', {
+        details: { reason: 'wallet_not_connected' },
+      })
+    }
+
     const changes = findQuoteChanges(quote)
     if (changes.length > 0) {
       return errorResponse(

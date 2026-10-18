@@ -3,7 +3,13 @@ import type { MockState } from '../db'
 
 export type ScenarioEffect =
   /** Resposta HTTP de erro no formato do contrato */
-  | { type: 'error'; status: number; code: ApiErrorCode; message: string }
+  | {
+      type: 'error'
+      status: number
+      code: ApiErrorCode
+      message: string
+      details?: Record<string, unknown>
+    }
   /** Falha de conexão (o cliente não recebe resposta) */
   | { type: 'network_error' }
   /** Segura a resposta além do tempo limite do cliente */

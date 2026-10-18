@@ -26,7 +26,10 @@ async function applyEffect({ rule, count }: MatchedRule) {
     case 'network_error':
       return HttpResponse.error()
     case 'error':
-      return errorResponse(effect.code, effect.message, { status: effect.status })
+      return errorResponse(effect.code, effect.message, {
+        status: effect.status,
+        details: effect.details,
+      })
   }
 }
 

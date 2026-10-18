@@ -1,4 +1,4 @@
-import type { Nft, Order, Quote } from '@/api/contracts'
+import type { Network, Nft, Order, Quote } from '@/api/contracts'
 import type { MockCoupon, MockUser, MockWallet } from '../fixtures'
 
 export interface MockSession {
@@ -32,6 +32,13 @@ export interface MockOrder extends Order {
   resolveAt: string
 }
 
+export interface MockWalletConnection {
+  walletId: string
+  userId: string
+  network: Network
+  connectedAt: string
+}
+
 export interface MockState {
   /** Versão do formato salvo. Ao mudar, o estado persistido é descartado. */
   schemaVersion: number
@@ -44,5 +51,6 @@ export interface MockState {
   quotes: MockQuote[]
   orders: MockOrder[]
   wallets: MockWallet[]
+  walletConnections: MockWalletConnection[]
   coupons: MockCoupon[]
 }

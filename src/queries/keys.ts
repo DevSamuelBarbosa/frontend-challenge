@@ -1,4 +1,4 @@
-import type { NftListParams } from '@/api/contracts'
+import type { NftListParams, OrderStatus, QuoteRequest } from '@/api/contracts'
 
 /**
  * Chaves do TanStack Query. Dados privados ficam sob `['user', userId, ...]`:
@@ -21,10 +21,14 @@ export const queryKeys = {
     scope: (userId: string) => ['user', userId] as const,
     favorites: (userId: string) => ['user', userId, 'favorites'] as const,
     cart: (userId: string) => ['user', userId, 'cart'] as const,
-    quote: (userId: string) => ['user', userId, 'quote'] as const,
+    quote: (userId: string, params?: QuoteRequest) =>
+      params ? (['user', userId, 'quote', params] as const) : (['user', userId, 'quote'] as const),
     orders: (userId: string) => ['user', userId, 'orders'] as const,
+    ordersByStatus: (userId: string, status: OrderStatus) =>
+      ['user', userId, 'orders', { status }] as const,
     order: (userId: string, orderId: string) => ['user', userId, 'orders', orderId] as const,
     profile: (userId: string) => ['user', userId, 'profile'] as const,
     wallets: (userId: string) => ['user', userId, 'wallets'] as const,
+    walletConnection: (userId: string) => ['user', userId, 'wallet-connection'] as const,
   },
 }

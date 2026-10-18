@@ -6,6 +6,11 @@ import { idSchema, isoDateSchema, networkSchema } from './common'
  * GET   /wallets                                  -> Wallet[]
  * POST  /wallets             CreateWalletRequest  -> Wallet (409 se a função já estiver ocupada)
  * PATCH /wallets/:walletId   UpdateWalletRequest  -> Wallet
+ *
+ * Conexão simulada da carteira (não há extensão real): exigida para criar pedidos.
+ * POST   /wallets/:walletId/connection  ConnectWalletRequest -> WalletConnection
+ *        (403 `wallet_rejected` se o usuário recusar na carteira; 400 se a rede não for suportada)
+ * DELETE /wallets/:walletId/connection                       -> 204
  */
 
 export const walletProviderSchema = z.enum(['metamask', 'coinbase', 'walletconnect', 'phantom'])
@@ -43,3 +48,13 @@ export type CreateWalletRequest = z.infer<typeof createWalletRequestSchema>
 
 export const updateWalletRequestSchema = createWalletRequestSchema.omit({ role: true }).partial()
 export type UpdateWalletRequest = z.infer<typeof updateWalletRequestSchema>
+
+export const connectWalletRequestSchema = z.object({ network: networkSchema })
+export type ConnectWalletRequest = z.infer<typeof connectWalletRequestSchema>
+
+export const walletConnectionSchema = z.object({
+  walletId: idSchema,
+  network: networkSchema,
+  connectedAt: isoDateSchema,
+})
+export type WalletConnection = z.infer<typeof walletConnectionSchema>
