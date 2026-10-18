@@ -1,10 +1,11 @@
-import { QueryClientProvider } from '@tanstack/react-query'
-import { RouterProvider } from '@tanstack/react-router'
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { queryClient } from '@/lib/query-client'
-import { syncSessionWithToken } from '@/queries/session'
-import { router } from './router'
+/**
+ * Ponto de entrada. Os mocks precisam iniciar antes de qualquer módulo da
+ * aplicação ser carregado: o transporte WebSocket do socket.io-client guarda a
+ * referência do `WebSocket` global ao ser importado, e o MSW só intercepta
+ * conexões criadas depois de substituí-lo. Por isso a aplicação é importada
+ * dinamicamente, depois do `enableMocking`.
+ */
+// O CSS não depende dos mocks e carrega já, sem esperar a aplicação
 import './index.css'
 
 async function enableMocking() {
@@ -14,13 +15,10 @@ async function enableMocking() {
   await startMockWorker()
 }
 
-enableMocking().then(() => {
-  syncSessionWithToken(queryClient)
-  createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
-    </StrictMode>,
-  )
-})
+async function bootstrap() {
+  await enableMocking()
+  const { renderApp } = await import('./app/render')
+  renderApp(document.getElementById('root')!)
+}
+
+void bootstrap()

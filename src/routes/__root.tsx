@@ -3,6 +3,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { SessionWatcher } from '@/components/session-watcher'
+import { RealtimeConnection } from '@/realtime/realtime-connection'
 
 export interface RouterContext {
   queryClient: QueryClient
@@ -27,6 +28,7 @@ function RootLayout() {
   return (
     <>
       <SessionWatcher />
+      <RealtimeConnection />
       <header className="border-b">
         <nav aria-label="Principal" className="flex flex-wrap gap-4 p-4">
           {links.map((link) => (
