@@ -37,8 +37,8 @@ export const loginRequestSchema = z.object({
 })
 export type LoginRequest = z.infer<typeof loginRequestSchema>
 
+/** O nome de exibição começa igual ao usuário e pode ser editado depois, no perfil */
 export const registerRequestSchema = z.object({
-  name: z.string().trim().min(2, 'Informe seu nome'),
   username: z
     .string()
     .trim()

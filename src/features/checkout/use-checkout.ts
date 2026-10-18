@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { type QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import { useSingleFlight } from '@/hooks/use-single-flight'
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { type FieldPath, useForm, useWatch } from 'react-hook-form'
 import type { Quote, Wallet, WalletConnection } from '@/api/contracts'
@@ -61,7 +62,9 @@ export function useCheckout(userId: string) {
   const form = useForm<CheckoutFormInput, unknown, CheckoutFormOutput>({
     resolver: zodResolver(checkoutFormSchema),
     defaultValues: toFormValues(draft),
-    mode: 'onTouched',
+    // Erros só depois da primeira tentativa de envio (ver o comentário em auth-form.tsx)
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
   })
   const walletId = useWatch({ control: form.control, name: 'walletId' })
   const network = useWatch({ control: form.control, name: 'network' })
@@ -229,7 +232,7 @@ export function useCheckout(userId: string) {
   }, [status, orderId, navigate, controller])
 
   /** Dados válidos: conecta a carteira (se preciso), refaz a cotação e abre a revisão */
-  const submit = form.handleSubmit(async () => {
+  const prepare = form.handleSubmit(async () => {
     setSubmitError(null)
     setOutcome(null)
     setPreparing(true)
@@ -247,6 +250,7 @@ export function useCheckout(userId: string) {
       setPreparing(false)
     }
   })
+  const submit = useSingleFlight(prepare)
 
   // Cupom: fica no rascunho, então o resumo do carrinho e o do pagamento mostram o mesmo
   const applyCoupon = useCallback(

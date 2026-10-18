@@ -26,7 +26,16 @@ export function useHidesMobileNav() {
     select: (s) =>
       s.location.pathname.startsWith('/nfts/') ||
       s.location.pathname === '/cart' ||
-      s.location.pathname === '/checkout',
+      s.location.pathname === '/checkout' ||
+      s.location.pathname === '/login' ||
+      s.location.pathname === '/register',
+  })
+}
+
+/** Login e cadastro são páginas inteiras no celular, sem o footer do site */
+export function useIsAuthRoute() {
+  return useRouterState({
+    select: (s) => s.location.pathname === '/login' || s.location.pathname === '/register',
   })
 }
 

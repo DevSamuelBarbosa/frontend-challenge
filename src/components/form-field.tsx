@@ -15,6 +15,8 @@ interface FormFieldProps {
   /** Mensagem de erro. Fica associada ao campo e é anunciada ao aparecer. */
   error?: string
   hint?: string
+  /** Esconde o rótulo só visualmente: continua disponível para leitores de tela */
+  hideLabel?: boolean
   className?: string
   /** Recebe os atributos de acessibilidade que o controle deve usar */
   children: (control: ControlProps) => ReactNode
@@ -24,13 +26,21 @@ interface FormFieldProps {
  * Campo de formulário: rótulo (com o asterisco de obrigatório, como no design), controle
  * e mensagem de erro ligados por `id` e `aria-describedby`.
  */
-export function FormField({ label, required, error, hint, className, children }: FormFieldProps) {
+export function FormField({
+  label,
+  required,
+  error,
+  hint,
+  hideLabel,
+  className,
+  children,
+}: FormFieldProps) {
   const id = useId()
   const messageId = `${id}-message`
   const describedBy = error || hint ? messageId : undefined
   return (
     <div className={cn('flex flex-col gap-2', className)}>
-      <Label htmlFor={id}>
+      <Label htmlFor={id} className={hideLabel ? 'sr-only' : undefined}>
         {label}
         {required && (
           <span aria-hidden className="text-lg leading-none text-required">

@@ -10,7 +10,7 @@ import {
 } from '@/components/icons/social-icons'
 import { UnavailableButton, UnavailableLink } from '@/components/unavailable'
 import { cn } from '@/lib/utils'
-import { useHasBuyBar } from './navigation'
+import { useHasBuyBar, useIsAuthRoute } from './navigation'
 
 const FEATURES = [
   {
@@ -50,8 +50,15 @@ const linkClass = 'text-sm text-foreground transition-colors hover:text-highligh
 
 export function SiteFooter() {
   const hasBuyBar = useHasBuyBar()
+  const isAuthRoute = useIsAuthRoute()
   return (
-    <footer className={cn('page-container mt-20 md:mt-28 md:pb-0', hasBuyBar ? 'pb-60' : 'pb-28')}>
+    <footer
+      className={cn(
+        'page-container mt-20 md:mt-28 md:pb-0',
+        hasBuyBar ? 'pb-60' : 'pb-28',
+        isAuthRoute && 'max-md:hidden',
+      )}
+    >
       <div className="bg-card">
         <section
           aria-label="Benefícios da Kurio"

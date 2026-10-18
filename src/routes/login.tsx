@@ -1,4 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { AuthScreen } from '@/features/auth/components/auth-screen'
+import { useDocumentTitle } from '@/hooks/use-document-title'
 import { authSearchSchema } from '@/lib/redirect'
 import { sessionQueryOptions } from '@/queries/session'
 
@@ -13,13 +15,7 @@ export const Route = createFileRoute('/login')({
 })
 
 function LoginPage() {
-  const { reason } = Route.useSearch()
-  return (
-    <>
-      <h1 className="text-2xl font-bold">Login</h1>
-      {reason === 'session_expired' && (
-        <p role="alert">Sua sessão expirou. Entre novamente para continuar de onde parou.</p>
-      )}
-    </>
-  )
+  const { redirect, reason } = Route.useSearch()
+  useDocumentTitle('Entrar')
+  return <AuthScreen mode="login" redirect={redirect} reason={reason} />
 }

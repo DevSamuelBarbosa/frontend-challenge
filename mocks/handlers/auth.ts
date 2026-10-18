@@ -27,7 +27,7 @@ export const authHandlers = [
     const salt = randomToken(8)
     const user: MockUser = {
       id: db.nextId('user'),
-      name: body.name,
+      name: body.username,
       username: body.username,
       email,
       bio: '',

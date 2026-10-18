@@ -182,3 +182,11 @@ Onde o design e os requisitos do desafio conflitam ou o design é ambíguo, a de
 - No desktop do detalhe, os rótulos "Contrato" e "Direitos autorais" estão trocados com seus textos; cada rótulo mostra o seu conteúdo.
 - O texto do segundo banner da tela inicial está cortado no design; foi completado com "cultura da internet".
 - Itens fora do escopo (Criadores, Aprenda, ações sociais, newsletter, escanear) aparecem desabilitados e anunciam "indisponível nesta demonstração".
+
+**Login e cadastro**
+
+- No desktop são um modal sobre a tela inicial (inerte e escondida de leitores de tela); no mobile, uma página inteira sem navegação inferior nem rodapé. Em ambos é a mesma rota (`/login`, `/register`), então acesso direto e refresh funcionam, e o `?redirect=` volta ao fluxo anterior.
+- O cadastro pede usuário, e-mail, senha e confirmação. O nome de exibição começa igual ao usuário e é editado no perfil.
+- Os erros dos formulários aparecem só após a primeira tentativa de envio. Validar ao sair do campo deslocava o layout no meio do clique em outro elemento (ex.: a aba "Criar conta"), e o clique se perdia.
+- Cliques seguidos em "Entrar"/"Criar conta" geram uma única requisição (`useSingleFlight`), e o envio nativo do navegador é sempre cancelado, para a senha nunca ir para a URL.
+- Login social e "Esqueceu a senha?" ficam desabilitados (fora do escopo).
