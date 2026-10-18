@@ -7,7 +7,7 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default defineConfig([
-  globalIgnores(['dist', 'coverage', 'src/routeTree.gen.ts']),
+  globalIgnores(['dist', 'coverage', 'src/routeTree.gen.ts', 'public/mockServiceWorker.js']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
