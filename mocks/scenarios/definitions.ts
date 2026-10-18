@@ -136,6 +136,18 @@ export const scenarios = [
     ],
   },
   {
+    name: 'realtime-chaos',
+    description: 'Eventos em tempo real chegam duplicados e seguidos de versões antigas',
+    latency: { min: 120, max: 320 },
+    realtime: { duplicate: true, stale: true },
+  },
+  {
+    name: 'realtime-offline',
+    description: 'O servidor de tempo real recusa conexões (a API REST funciona)',
+    latency: { min: 120, max: 320 },
+    realtime: { offline: true },
+  },
+  {
     name: 'payment-rejected',
     description: 'A carteira recusa o pagamento',
     latency: { min: 120, max: 320 },

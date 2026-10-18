@@ -3,6 +3,7 @@ import { db } from './db'
 import { changePrice, setAvailability } from './lib/mutations'
 import { settleOrder } from './lib/orders'
 import { resetScenario, scenarioInfo, setScenario } from './scenarios/runtime'
+import { realtimeControls } from './socket/server'
 
 /**
  * Controles da API simulada, expostos em `window.__mocks` para demonstração,
@@ -29,6 +30,8 @@ export const mockControls = {
 
   setAvailability: (nftId: string, available: number, editionId?: string) =>
     setAvailability(nftId, available, editionId),
+
+  realtime: realtimeControls,
 
   /** Finaliza imediatamente os pedidos pendentes com o resultado já decidido */
   async settlePendingOrders() {

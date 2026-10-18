@@ -46,6 +46,15 @@ export interface Scenario {
   triggers?: ScenarioTrigger[]
   payment?: { outcome: 'confirmed' | 'rejected'; delayMs: number }
   sessionTtlMs?: number
+  /** Comportamento do canal em tempo real */
+  realtime?: {
+    /** Cada evento é entregue duas vezes */
+    duplicate?: boolean
+    /** Depois de cada evento, reenvia o evento anterior do mesmo recurso (versão antiga) */
+    stale?: boolean
+    /** Recusa conexões, simulando o servidor de tempo real fora do ar */
+    offline?: boolean
+  }
   /** Ajustes no banco aplicados ao ativar o cenário (depois do reset) */
   setup?: (draft: MockState) => void
 }

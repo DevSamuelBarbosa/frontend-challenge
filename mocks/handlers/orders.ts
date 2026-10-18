@@ -5,6 +5,7 @@ import { api } from '../lib/http'
 import {
   findQuoteChanges,
   fingerprint,
+  notifyOrderChanged,
   reserveStock,
   scheduleSettlement,
   settleOrder,
@@ -117,6 +118,7 @@ export const orderHandlers = [
     // O estoque fica reservado enquanto o pagamento está pendente
     reserveStock(order.lines)
     scheduleSettlement(order)
+    notifyOrderChanged(order)
 
     return HttpResponse.json(toOrder(order), { status: 201 })
   }),

@@ -2,6 +2,7 @@ import { setupWorker } from 'msw/browser'
 import { mockControls, type MockControls } from './controls'
 import { handlers } from './handlers'
 import { resumePendingOrders } from './lib/orders'
+import { socketHandlers } from './socket/server'
 
 declare global {
   interface Window {
@@ -9,7 +10,7 @@ declare global {
   }
 }
 
-export const worker = setupWorker(...handlers)
+export const worker = setupWorker(...handlers, ...socketHandlers)
 
 /**
  * Lê `?scenario=<nome>` e `?mocks-reset` da URL, aplica e remove da barra de

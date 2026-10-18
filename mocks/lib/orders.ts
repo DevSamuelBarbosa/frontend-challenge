@@ -5,6 +5,20 @@ import { findEdition, maxQuantity } from './catalog'
 import { sha256 } from './crypto'
 import { adjustAvailability } from './mutations'
 
+type OrderListener = (order: MockOrder) => void
+const orderListeners = new Set<OrderListener>()
+
+/** Avisa quando um pedido é criado ou muda de estado (usado pelos eventos em tempo real) */
+export function onOrderChanged(listener: OrderListener) {
+  orderListeners.add(listener)
+  return () => orderListeners.delete(listener)
+}
+
+export function notifyOrderChanged(order: MockOrder) {
+  const snapshot = structuredClone(order)
+  orderListeners.forEach((listener) => listener(snapshot))
+}
+
 const EXPLORERS: Record<Network, string> = {
   ethereum: 'https://etherscan.io/tx/',
   polygon: 'https://polygonscan.com/tx/',
@@ -133,7 +147,9 @@ export async function settleOrder(orderId: string, options: { force?: boolean } 
     target.version += 1
     target.updatedAt = new Date().toISOString()
   })
-  return db.state.orders.find((o) => o.id === orderId)
+  const settled = db.state.orders.find((o) => o.id === orderId)!
+  notifyOrderChanged(settled)
+  return settled
 }
 
 /** Agenda a finalização enquanto a página estiver aberta */
