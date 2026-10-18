@@ -10,7 +10,7 @@ export const router = createRouter({
   // Quem controla o cache dos dados é o TanStack Query, não o router
   defaultPreloadStaleTime: 0,
   scrollRestoration: true,
-  defaultNotFoundComponent: NotFound,
+  defaultNotFoundComponent: () => <NotFound />,
 })
 
 declare module '@tanstack/react-router' {
