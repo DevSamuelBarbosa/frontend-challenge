@@ -46,6 +46,22 @@ export class App {
     ) as Promise<Awaited<R>>
   }
 
+  /**
+   * Consulta a API simulada de dentro da página (passa pelos handlers do MSW). Serve de
+   * referência para conferir se a interface mostra o que a API devolve.
+   */
+  api<T>(path: string) {
+    return this.page.evaluate(async (url) => {
+      const response = await fetch(url)
+      return response.json()
+    }, `/api${path}`) as Promise<T>
+  }
+
+  /** Projeto mobile (barra inferior, filtros na gaveta) ou desktop */
+  get isMobile() {
+    return (this.page.viewportSize()?.width ?? 1440) < 768
+  }
+
   /** Entra pela tela de login, como o usuário faria, e espera voltar ao destino */
   async login(
     user: TestUser,
