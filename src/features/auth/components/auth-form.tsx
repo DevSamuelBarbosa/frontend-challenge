@@ -1,8 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useSingleFlight } from '@/hooks/use-single-flight'
 import { type FieldPath, type FieldValues, type UseFormReturn, useForm } from 'react-hook-form'
+import type { Session } from '@/api/contracts'
 import { isApiError } from '@/api/errors'
 import { FormField } from '@/components/form-field'
 import { FacebookColorIcon, GoogleIcon } from '@/components/icons/brand-icons'
@@ -10,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { UnavailableButton, UnavailableLink } from '@/components/unavailable'
 import { cn } from '@/lib/utils'
+import { mergeGuestCartIntoAccount } from '@/queries/cart'
 import { useLogin, useRegister } from '@/queries/session'
 import {
   loginFormSchema,
@@ -26,6 +29,11 @@ interface AuthFormProps {
   redirect: string | undefined
   /** `page`: tela cheia do celular, com campos arredondados */
   variant: Variant
+  /**
+   * Chamado depois de entrar, no lugar de navegar para `redirect`. É o que o diálogo sobre a
+   * tela atual usa para fechar e, só se houver destino, seguir para ele.
+   */
+  onSuccess?: () => void | Promise<void>
 }
 
 /**
@@ -38,16 +46,21 @@ function useAuthSubmit<T extends FieldValues>(
   redirect: string | undefined,
   /** Campos na ordem da tela: o foco vai para o primeiro com erro, não para o primeiro da resposta */
   fieldOrder: FieldPath<T>[],
-  run: (values: T) => Promise<unknown>,
+  run: (values: T) => Promise<Session>,
+  onSuccess?: () => void | Promise<void>,
 ) {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [formError, setFormError] = useState<string | null>(null)
 
   const submit = form.handleSubmit(async (values) => {
     setFormError(null)
     try {
-      await run(values)
-      await navigate({ href: redirect ?? '/', replace: true })
+      const session = await run(values)
+      // O carrinho do visitante já está na conta quando a próxima tela abre (ex.: o pagamento)
+      await mergeGuestCartIntoAccount(queryClient, session.user.id)
+      if (onSuccess) await onSuccess()
+      else await navigate({ href: redirect ?? '/', replace: true })
     } catch (error) {
       if (!isApiError(error)) return setFormError('Não foi possível concluir. Tente novamente.')
       const fields = Object.entries(error.fields)
@@ -103,7 +116,7 @@ function SubmitButton({
   )
 }
 
-export function LoginForm({ redirect, variant }: AuthFormProps) {
+export function LoginForm({ redirect, variant, onSuccess }: AuthFormProps) {
   const login = useLogin()
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
@@ -118,6 +131,7 @@ export function LoginForm({ redirect, variant }: AuthFormProps) {
     redirect,
     ['email', 'password'],
     (values) => login.mutateAsync(values),
+    onSuccess,
   )
   const { errors } = form.formState
 
@@ -163,7 +177,7 @@ export function LoginForm({ redirect, variant }: AuthFormProps) {
   )
 }
 
-export function RegisterForm({ redirect, variant }: AuthFormProps) {
+export function RegisterForm({ redirect, variant, onSuccess }: AuthFormProps) {
   const register = useRegister()
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerFormSchema),
@@ -181,6 +195,7 @@ export function RegisterForm({ redirect, variant }: AuthFormProps) {
       void confirmPassword // só serve para conferir a senha no cliente
       return register.mutateAsync(body)
     },
+    onSuccess,
   )
   const { errors } = form.formState
 

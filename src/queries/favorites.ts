@@ -6,11 +6,11 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
-import { useLocation, useNavigate } from '@tanstack/react-router'
 import { useCallback } from 'react'
 import { toast } from 'sonner'
 import type { FavoriteList, Nft, NftSummary } from '@/api/contracts'
 import { addFavorite, getFavorites, removeFavorite } from '@/api/favorites'
+import { useAuthDialog } from '@/features/auth/use-auth-dialog'
 import { queryKeys } from './keys'
 import { useSession } from './session'
 
@@ -102,8 +102,7 @@ export const toggleFavoriteMutationOptions = (queryClient: QueryClient, userId: 
  */
 export function useFavorites() {
   const queryClient = useQueryClient()
-  const navigate = useNavigate()
-  const location = useLocation()
+  const openAuth = useAuthDialog()
   const { user } = useSession()
   const userId = user?.id ?? ''
 
@@ -119,7 +118,8 @@ export function useFavorites() {
   const toggle = useCallback(
     (nftId: string) => {
       if (!user) {
-        void navigate({ to: '/login', search: { redirect: location.href } })
+        // Visitante: o login abre sobre a página atual (no celular, vira a página de login)
+        openAuth()
         return
       }
       const favorite = !isFavorite(nftId)
@@ -135,7 +135,7 @@ export function useFavorites() {
         },
       )
     },
-    [user, navigate, location.href, mutate, isFavorite],
+    [user, openAuth, mutate, isFavorite],
   )
 
   return { favorites, isFavorite, toggle, mutation }

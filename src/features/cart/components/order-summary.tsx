@@ -2,6 +2,7 @@ import type { UseQueryResult } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import type { Quote } from '@/api/contracts'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useAuthDialog } from '@/features/auth/use-auth-dialog'
 import { cn } from '@/lib/utils'
 import { useSession } from '@/queries/session'
 import { CouponForm } from './coupon-form'
@@ -33,6 +34,7 @@ export function OrderSummary({
   variant = 'panel',
 }: OrderSummaryProps) {
   const { user } = useSession()
+  const openAuth = useAuthDialog()
   const checkoutLabel = user ? 'Finalizar compra' : 'Conectar e finalizar'
   const data = quote.data
   const coupon = data?.coupon ?? null
@@ -88,10 +90,19 @@ export function OrderSummary({
               Ajuste os itens indisponíveis para continuar.
             </p>
           </>
-        ) : (
+        ) : user ? (
           <Link to="/checkout" className={ctaClass(variant)}>
             {checkoutLabel}
           </Link>
+        ) : (
+          // Visitante: o login abre sobre o carrinho e, ao entrar, segue para o pagamento
+          <button
+            type="button"
+            onClick={() => openAuth({ redirect: '/checkout' })}
+            className={ctaClass(variant)}
+          >
+            {checkoutLabel}
+          </button>
         )}
         <Link
           to="/"

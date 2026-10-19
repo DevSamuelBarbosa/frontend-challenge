@@ -7,6 +7,7 @@ import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { SessionWatcher } from '@/components/session-watcher'
 import { Toaster } from '@/components/ui/sonner'
+import { AuthDialog } from '@/features/auth/auth-dialog'
 import { RealtimeConnection } from '@/realtime/realtime-connection'
 
 export interface RouterContext {
@@ -34,6 +35,7 @@ function RootLayout() {
       </main>
       <SiteFooter />
       <MobileNav />
+      <AuthDialog />
       <Toaster />
       {import.meta.env.DEV && (
         <>

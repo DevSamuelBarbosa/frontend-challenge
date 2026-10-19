@@ -3,24 +3,14 @@ import { CatalogSection } from '@/features/catalog/components/catalog-section'
 import { Hero } from '@/features/catalog/components/hero'
 import { catalogSearchSchema } from '@/features/catalog/search'
 import { useIsDesktop } from '@/hooks/use-media-query'
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
-import { cn } from '@/lib/utils'
-import { type AuthMode, LoginForm, RegisterForm, SocialLogin, type Variant } from './auth-form'
+import { type AuthMode, SocialLogin } from './auth-form'
+import { type AuthReason, REASONS } from '../auth-copy'
+import { AuthForm, AuthModalShell, AuthTabs, Divider } from './auth-modal-shell'
 
 interface AuthScreenProps {
   mode: AuthMode
   redirect: string | undefined
-  reason: 'session_expired' | 'session_invalid' | undefined
-}
-
-const COPY = {
-  login: 'Entre para gerenciar sua carteira, coleção e perfil de criador.',
-  register: 'Crie seu perfil de colecionador e conecte uma carteira quando quiser.',
-}
-
-const REASONS = {
-  session_expired: 'Sua sessão expirou. Entre novamente para continuar de onde parou.',
-  session_invalid: 'Sua sessão não é mais válida. Entre novamente para continuar.',
+  reason: AuthReason | undefined
 }
 
 /**
@@ -30,34 +20,6 @@ const REASONS = {
 export function AuthScreen(props: AuthScreenProps) {
   const isDesktop = useIsDesktop()
   return isDesktop ? <AuthModal {...props} /> : <AuthPage {...props} />
-}
-
-function Form({
-  mode,
-  redirect,
-  variant,
-}: {
-  mode: AuthMode
-  redirect: string | undefined
-  variant: Variant
-}) {
-  // A `key` reinicia os campos ao alternar entre entrar e criar conta
-  return mode === 'login' ? (
-    <LoginForm key="login" redirect={redirect} variant={variant} />
-  ) : (
-    <RegisterForm key="register" redirect={redirect} variant={variant} />
-  )
-}
-
-function Divider({ className }: { className?: string }) {
-  return (
-    <div className={cn('relative', className)}>
-      <hr className="border-divider" />
-      <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs max-md:bg-background">
-        Ou continue com
-      </span>
-    </div>
-  )
 }
 
 const noop = () => undefined
@@ -85,55 +47,26 @@ function AuthModal({ mode, redirect, reason }: AuthScreenProps) {
   return (
     <>
       <HomeBackdrop />
-      <Dialog open onOpenChange={(open) => !open && void navigate({ to: '/' })}>
-        <DialogContent className="max-h-[92dvh] w-full max-w-[31.25rem] gap-0 overflow-y-auto rounded-none border-0 bg-card p-0 sm:max-w-[31.25rem] [&>button]:top-5 [&>button]:right-5 [&>button]:text-primary [&>button]:opacity-100">
-          <DialogTitle className="sr-only">
-            {mode === 'login' ? 'Entrar' : 'Criar conta'}
-          </DialogTitle>
-          <nav
-            aria-label="Entrar ou criar conta"
-            className="flex items-center justify-center gap-3 px-6 pt-12 text-xl font-bold"
-          >
-            <Link
-              to="/login"
-              search={search}
-              aria-current={mode === 'login' ? 'page' : undefined}
-              className={cn(mode === 'login' && 'text-highlight')}
-            >
-              Entrar
-            </Link>
-            <span aria-hidden className="h-5 w-px bg-primary" />
-            <Link
-              to="/register"
-              search={search}
-              aria-current={mode === 'register' ? 'page' : undefined}
-              className={cn(mode === 'register' && 'text-highlight')}
-            >
-              Criar conta
-            </Link>
-          </nav>
-
-          <div className="px-6 pt-8 sm:px-20">
-            <DialogDescription className="text-center text-xs leading-relaxed text-foreground">
-              {COPY[mode]}
-            </DialogDescription>
-            {mode === 'login' && reason && (
-              <p role="status" className="mt-4 border border-primary bg-band px-3 py-2 text-sm">
-                {REASONS[reason]}
-              </p>
+      <AuthModalShell
+        mode={mode}
+        redirect={redirect}
+        reason={reason}
+        onClose={() => void navigate({ to: '/' })}
+        tabs={
+          <AuthTabs mode={mode}>
+            {({ id, label, className, current }) => (
+              <Link
+                to={id === 'login' ? '/login' : '/register'}
+                search={search}
+                aria-current={current ? 'page' : undefined}
+                className={className}
+              >
+                {label}
+              </Link>
             )}
-            <div className="mt-6">
-              <Form mode={mode} redirect={redirect} variant="modal" />
-            </div>
-          </div>
-
-          <Divider className="mt-6" />
-          <div className="px-6 pt-5 pb-16 sm:px-20">
-            <SocialLogin variant="modal" />
-          </div>
-          <div aria-hidden className="h-2.5 shrink-0 bg-primary" />
-        </DialogContent>
-      </Dialog>
+          </AuthTabs>
+        }
+      />
     </>
   )
 }
@@ -159,7 +92,7 @@ function AuthPage({ mode, redirect, reason }: AuthScreenProps) {
       )}
 
       <div className="mt-10 text-left">
-        <Form mode={mode} redirect={redirect} variant="page" />
+        <AuthForm mode={mode} redirect={redirect} variant="page" />
       </div>
       <Divider className="mt-10" />
       <div className="mt-5 text-left">

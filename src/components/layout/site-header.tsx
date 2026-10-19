@@ -1,8 +1,9 @@
-import { Link, useLocation, useNavigate } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 // LogOut desenha a seta saindo da porta, que é o ícone do botão "Entrar" no design
 import { LogOut as EnterIcon, Search, ShoppingCart, UserRound, X } from 'lucide-react'
 import { type FormEvent, useEffect, useId, useRef, useState } from 'react'
 import { UnavailableLink } from '@/components/unavailable'
+import { useAuthDialog } from '@/features/auth/use-auth-dialog'
 import { catalogSearchDefaults } from '@/features/catalog/search'
 import { cn } from '@/lib/utils'
 import { useSession } from '@/queries/session'
@@ -157,7 +158,7 @@ const accountButton =
 
 function AccountLink() {
   const { user } = useSession()
-  const location = useLocation()
+  const openAuth = useAuthDialog()
 
   if (user) {
     return (
@@ -169,9 +170,10 @@ function AccountLink() {
     )
   }
   return (
-    <Link to="/login" search={{ redirect: location.href }} className={accountButton}>
+    // Abre o login sobre a tela atual, sem sair dela
+    <button type="button" onClick={() => openAuth()} className={accountButton}>
       <EnterIcon className="size-5" aria-hidden />
       Entrar
-    </Link>
+    </button>
   )
 }
