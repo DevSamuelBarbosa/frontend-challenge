@@ -1,6 +1,6 @@
 {
   "environment": {
-    "generatedAt": "2026-10-18T23:16:07.962Z",
+    "generatedAt": "2026-10-19T00:52:49.825Z",
     "lighthouse": "13.5.0",
     "chrome": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
     "node": "v22.14.0",
@@ -24,16 +24,16 @@
       "runs": [
         {
           "scores": {
-            "performance": 82,
+            "performance": 91,
             "accessibility": 100,
             "best-practices": 100,
             "seo": 100
           },
-          "lcp": 3331.3433750000004,
+          "lcp": 2818.8430999999996,
           "cls": 0,
-          "tbt": 349,
-          "fcp": 2105.4770000000008,
-          "si": 2168.516061721806,
+          "tbt": 206.38807500000007,
+          "fcp": 1867.3953999999999,
+          "si": 1867.3953999999999,
           "file": "inicio-mobile-1",
           "version": "13.5.0",
           "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
@@ -43,16 +43,16 @@
         },
         {
           "scores": {
-            "performance": 83,
+            "performance": 92,
             "accessibility": 100,
             "best-practices": 100,
             "seo": 100
           },
-          "lcp": 3407.4621,
+          "lcp": 2712.286325,
           "cls": 0,
-          "tbt": 299,
-          "fcp": 2124.6414,
-          "si": 2168.7963783109135,
+          "tbt": 212.51942499999996,
+          "fcp": 1836.8446,
+          "si": 1836.8446,
           "file": "inicio-mobile-2",
           "version": "13.5.0",
           "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
@@ -62,16 +62,16 @@
         },
         {
           "scores": {
-            "performance": 83,
+            "performance": 92,
             "accessibility": 100,
             "best-practices": 100,
             "seo": 100
           },
-          "lcp": 3427.2194,
+          "lcp": 2713.622675,
           "cls": 0,
-          "tbt": 315.5,
-          "fcp": 2120.4796,
-          "si": 2169.224120700831,
+          "tbt": 217.261575,
+          "fcp": 1837.4074,
+          "si": 1837.4074,
           "file": "inicio-mobile-3",
           "version": "13.5.0",
           "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
@@ -82,16 +82,16 @@
       ],
       "median": {
         "scores": {
-          "performance": 83,
+          "performance": 92,
           "accessibility": 100,
           "best-practices": 100,
           "seo": 100
         },
-        "lcp": 3407.4621,
+        "lcp": 2713.622675,
         "cls": 0,
-        "tbt": 315.5,
-        "fcp": 2120.4796,
-        "si": 2168.7963783109135
+        "tbt": 212.51942499999996,
+        "fcp": 1837.4074,
+        "si": 1837.4074
       }
     },
     {
@@ -101,16 +101,16 @@
       "runs": [
         {
           "scores": {
-            "performance": 98,
+            "performance": 99,
             "accessibility": 100,
             "best-practices": 100,
             "seo": 100
           },
-          "lcp": 1080.3494500000002,
+          "lcp": 838.0923,
           "cls": 0.0001540030496185291,
-          "tbt": 10,
-          "fcp": 739.8188500000001,
-          "si": 804.7438856940643,
+          "tbt": 6.5,
+          "fcp": 630.569225,
+          "si": 630.569225,
           "file": "inicio-desktop-1",
           "version": "13.5.0",
           "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
@@ -120,16 +120,16 @@
         },
         {
           "scores": {
-            "performance": 98,
+            "performance": 99,
             "accessibility": 100,
             "best-practices": 100,
             "seo": 100
           },
-          "lcp": 1028.0556,
+          "lcp": 795.9976999999999,
           "cls": 0.0001540030496185291,
-          "tbt": 10,
-          "fcp": 729.4167,
-          "si": 775.6945727133323,
+          "tbt": 4.5,
+          "fcp": 599.2482749999999,
+          "si": 599.2482749999999,
           "file": "inicio-desktop-2",
           "version": "13.5.0",
           "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
@@ -139,16 +139,16 @@
         },
         {
           "scores": {
-            "performance": 98,
+            "performance": 99,
             "accessibility": 100,
             "best-practices": 100,
             "seo": 100
           },
-          "lcp": 1078.598775,
+          "lcp": 816.1610999999999,
           "cls": 0.0001540030496185291,
-          "tbt": 10.5,
-          "fcp": 735.3760750000001,
-          "si": 841.5618186889851,
+          "tbt": 6,
+          "fcp": 614.870825,
+          "si": 614.870825,
           "file": "inicio-desktop-3",
           "version": "13.5.0",
           "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
@@ -159,16 +159,16 @@
       ],
       "median": {
         "scores": {
-          "performance": 98,
+          "performance": 99,
           "accessibility": 100,
           "best-practices": 100,
           "seo": 100
         },
-        "lcp": 1078.598775,
+        "lcp": 816.1610999999999,
         "cls": 0.0001540030496185291,
-        "tbt": 10,
-        "fcp": 735.3760750000001,
-        "si": 804.7438856940643
+        "tbt": 6,
+        "fcp": 614.870825,
+        "si": 614.870825
       }
     },
     {
@@ -178,36 +178,17 @@
       "runs": [
         {
           "scores": {
-            "performance": 85,
+            "performance": 90,
             "accessibility": 100,
             "best-practices": 100,
             "seo": 100
           },
-          "lcp": 3541.4505,
+          "lcp": 2978.35585,
           "cls": 0,
-          "tbt": 206,
-          "fcp": 2324.1075,
-          "si": 2414.27697634263,
+          "tbt": 182,
+          "fcp": 1963.014475,
+          "si": 2141.85569648708,
           "file": "detalhe-mobile-1",
-          "version": "13.5.0",
-          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
-          "emulation": "mobile",
-          "throttling": "simulate",
-          "kept": true
-        },
-        {
-          "scores": {
-            "performance": 76,
-            "accessibility": 100,
-            "best-practices": 100,
-            "seo": 100
-          },
-          "lcp": 3788.12825,
-          "cls": 0,
-          "tbt": 400.95512500000007,
-          "fcp": 2322.903875,
-          "si": 2866.7627674152054,
-          "file": "detalhe-mobile-2",
           "version": "13.5.0",
           "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
           "emulation": "mobile",
@@ -216,16 +197,35 @@
         },
         {
           "scores": {
-            "performance": 86,
+            "performance": 90,
             "accessibility": 100,
             "best-practices": 100,
             "seo": 100
           },
-          "lcp": 3559.5415500000004,
+          "lcp": 2948.8255,
           "cls": 0,
-          "tbt": 166.89582500000006,
-          "fcp": 2196.062425,
-          "si": 2399.811572701703,
+          "tbt": 198.5,
+          "fcp": 1931.2092499999999,
+          "si": 2116.60045942341,
+          "file": "detalhe-mobile-2",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+          "emulation": "mobile",
+          "throttling": "simulate",
+          "kept": true
+        },
+        {
+          "scores": {
+            "performance": 93,
+            "accessibility": 100,
+            "best-practices": 100,
+            "seo": 100
+          },
+          "lcp": 2821.0961000000007,
+          "cls": 0,
+          "tbt": 143.5,
+          "fcp": 1880.24035,
+          "si": 1951.325427971298,
           "file": "detalhe-mobile-3",
           "version": "13.5.0",
           "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
@@ -236,16 +236,16 @@
       ],
       "median": {
         "scores": {
-          "performance": 85,
+          "performance": 90,
           "accessibility": 100,
           "best-practices": 100,
           "seo": 100
         },
-        "lcp": 3559.5415500000004,
+        "lcp": 2948.8255,
         "cls": 0,
-        "tbt": 206,
-        "fcp": 2322.903875,
-        "si": 2414.27697634263
+        "tbt": 182,
+        "fcp": 1931.2092499999999,
+        "si": 2116.60045942341
       }
     },
     {
@@ -260,11 +260,11 @@
             "best-practices": 100,
             "seo": 100
           },
-          "lcp": 1046.4517,
+          "lcp": 1036.0487,
           "cls": 0.00536360388624905,
           "tbt": 0,
-          "fcp": 713.9655,
-          "si": 843.8826095756738,
+          "fcp": 739.8205,
+          "si": 802.0323342268925,
           "file": "detalhe-desktop-1",
           "version": "13.5.0",
           "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
@@ -274,16 +274,16 @@
         },
         {
           "scores": {
-            "performance": 98,
+            "performance": 99,
             "accessibility": 100,
             "best-practices": 100,
             "seo": 100
           },
-          "lcp": 1095.1675500000001,
+          "lcp": 878.5905499999999,
           "cls": 0.00536360388624905,
           "tbt": 0,
-          "fcp": 754.04825,
-          "si": 858.8534125617616,
+          "fcp": 630.49325,
+          "si": 673.9707395622755,
           "file": "detalhe-desktop-2",
           "version": "13.5.0",
           "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
@@ -293,16 +293,16 @@
         },
         {
           "scores": {
-            "performance": 98,
+            "performance": 99,
             "accessibility": 100,
             "best-practices": 100,
             "seo": 100
           },
-          "lcp": 1042.6638,
+          "lcp": 881.5276999999999,
           "cls": 0.00536360388624905,
           "tbt": 0,
-          "fcp": 715.617,
-          "si": 790.671024299274,
+          "fcp": 632.8054999999999,
+          "si": 680.0690267935547,
           "file": "detalhe-desktop-3",
           "version": "13.5.0",
           "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
@@ -313,16 +313,16 @@
       ],
       "median": {
         "scores": {
-          "performance": 98,
+          "performance": 99,
           "accessibility": 100,
           "best-practices": 100,
           "seo": 100
         },
-        "lcp": 1046.4517,
+        "lcp": 881.5276999999999,
         "cls": 0.00536360388624905,
         "tbt": 0,
-        "fcp": 715.617,
-        "si": 843.8826095756738
+        "fcp": 632.8054999999999,
+        "si": 680.0690267935547
       }
     }
   ]

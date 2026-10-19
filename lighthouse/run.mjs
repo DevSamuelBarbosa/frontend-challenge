@@ -42,6 +42,21 @@ const PROFILES = ALL_PROFILES.filter(
 const CATEGORIES = ['performance', 'accessibility', 'best-practices', 'seo']
 const TARGETS = { performance: 90, accessibility: 95, 'best-practices': 95, seo: 90 }
 
+// Se o Chrome cair no meio de uma medição, o Lighthouse rejeita uma promessa que nenhum
+// `try` captura. A medição em si falha por tempo limite e é repetida.
+process.on('unhandledRejection', (error) => {
+  if (/Target closed|Connection closed|Session closed/.test(String(error))) return
+  throw error
+})
+const MEASURE_TIMEOUT_MS = 120_000
+const withTimeout = (promise, ms) =>
+  Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`sem resposta em ${ms / 1000} s`)), ms).unref(),
+    ),
+  ])
+
 const median = (values) => {
   const sorted = [...values].sort((a, b) => a - b)
   const middle = Math.floor(sorted.length / 2)
@@ -122,7 +137,7 @@ try {
             chromeFlags: ['--headless=new', '--no-sandbox', '--disable-gpu'],
           })
           try {
-            result = await measure(chrome, page, profile, i)
+            result = await withTimeout(measure(chrome, page, profile, i), MEASURE_TIMEOUT_MS)
           } catch (error) {
             if (attempt >= 3) throw error
             console.warn(`Medição interrompida (${error.message}); tentando de novo…`)

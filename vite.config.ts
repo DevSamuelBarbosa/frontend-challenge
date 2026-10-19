@@ -15,6 +15,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      // Dependência do MSW para cookies, que a aplicação não usa (ver o arquivo)
+      tldts: fileURLToPath(new URL('./mocks/shims/tldts.ts', import.meta.url)),
     },
   },
 })

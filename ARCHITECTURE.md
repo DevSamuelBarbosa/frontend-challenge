@@ -205,6 +205,7 @@ Os eventos de recurso têm `id` estável (`<recurso>:<id>:v<versão>`), recurso 
 - **Servidor de tempo real fora do ar:** o mock dispara `error` antes de fechar a conexão, como o navegador faz. Sem isso, o `socket.io-client` fica travado.
 - **Ordem de carregamento:** o transporte WebSocket do engine.io guarda a referência do `WebSocket` global ao ser importado. Por isso `main.tsx` inicia os mocks antes de importar a aplicação. O CSS é importado na entrada para não atrasar a primeira pintura.
 - **Links de exploração:** seguem o formato dos exploradores reais, mas o hash é simulado. A interface sinaliza que a referência é simulada.
+- **`tldts` substituído por um stub no build** (`mocks/shims/tldts.ts`): é uma dependência do MSW usada só para cookies (lista de sufixos públicos de ~150 KB) e a aplicação autentica por token. Reduz o chunk dos mocks de 478 KB para 214 KB. Se um dia a aplicação passar a usar cookies, o alias em `vite.config.ts` deve ser removido.
 - **`npm audit`:** os alertas "high" vêm do CLI do `shadcn` (dependência de desenvolvimento, fora do bundle).
 - **Imagens dos NFTs**: os 4 assets do Figma (PNG 1254×1254, ~2 MB cada) foram convertidos para WebP em 240, 480 e 960 px (308 KB no total) e servidos com `srcset`, para não pesar no carregamento. Os 36 NFTs do catálogo reutilizam essas 4 artes. Os avatares de criadores e usuários seguem como SVGs gerados, pois o design não traz esses assets.
 - **Dados alinhados ao design**: coleções, redes (Ethereum, Polygon e Solana), preço anterior riscado, selo RARO, avaliações e edições 1/1, 1/10, 1/50 e aberta seguem o Figma. Os 9 primeiros NFTs reproduzem nomes, preços e ordem da tela inicial.
@@ -287,6 +288,6 @@ Onde o design e os requisitos do desafio conflitam ou o design é ambíguo, a de
 - Login social, "Esqueceu a senha?", criadores, aprendizado, atividade, ofertas, arquivos baixados,
   suporte e newsletter estão fora do escopo e aparecem desabilitados.
 - O cadastro de carteira aceita só endereços no formato `0x`, mesmo com a rede Solana marcada.
-- Performance no mobile abaixo da meta de 90 no Lighthouse (83 a 85), explicada em
-  [`lighthouse/ANALISE.md`](lighthouse/ANALISE.md).
+- A margem de Performance no mobile do Lighthouse é pequena no detalhe do NFT (mediana 90 e
+  medições de 90 a 93); detalhes em [`lighthouse/ANALISE.md`](lighthouse/ANALISE.md).
 - As baselines da regressão visual são do Linux.

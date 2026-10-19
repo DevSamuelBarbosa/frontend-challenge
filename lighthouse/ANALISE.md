@@ -22,40 +22,37 @@ experimentar uma combinação: `LH_PAGES=inicio LH_PROFILES=mobile LH_RUNS=1 npm
 
 | Página         | Perfil  | Performance | Accessibility | Best Practices | SEO |    LCP |   CLS |    TBT |
 | -------------- | ------- | ----------: | ------------: | -------------: | --: | -----: | ----: | -----: |
-| Início         | Mobile  |      **83** |           100 |            100 | 100 | 3,41 s | 0,000 | 316 ms |
-| Início         | Desktop |          98 |           100 |            100 | 100 | 1,08 s | 0,000 |  10 ms |
-| Detalhe do NFT | Mobile  |      **85** |           100 |            100 | 100 | 3,56 s | 0,000 | 206 ms |
-| Detalhe do NFT | Desktop |          98 |           100 |            100 | 100 | 1,05 s | 0,005 |   0 ms |
+| Início         | Mobile  |          92 |           100 |            100 | 100 | 2,71 s | 0,000 | 213 ms |
+| Início         | Desktop |          99 |           100 |            100 | 100 | 0,82 s | 0,000 |   6 ms |
+| Detalhe do NFT | Mobile  |          90 |           100 |            100 | 100 | 2,95 s | 0,000 | 182 ms |
+| Detalhe do NFT | Desktop |          99 |           100 |            100 | 100 | 0,88 s | 0,005 |   0 ms |
 
-Metas: Performance ≥ 90, Accessibility ≥ 95, Best Practices ≥ 95, SEO ≥ 90.
+Metas: Performance ≥ 90, Accessibility ≥ 95, Best Practices ≥ 95, SEO ≥ 90. **Todas atendidas.**
 
-- **Atendidas:** Accessibility, Best Practices e SEO (100 em todas as combinações) e Performance
-  no desktop (98). CLS fica em zero no mobile e em 0,005 no desktop.
-- **Abaixo da meta:** Performance no **mobile** (83 no início e 85 no detalhe). Fica entre 76 e 88
-  de uma medição para outra; a mediana de 3 medições é o número que vale.
+A margem no **detalhe mobile é pequena**: as 3 medições deram 90, 90 e 93. O perfil mobile simula
+CPU 4× mais lenta e rede de 1,6 Mbps, e o resultado varia alguns pontos de uma execução para a
+outra.
 
-## Por que o mobile fica abaixo de 90
+## O que pesava no mobile e o que foi feito
 
-O perfil mobile do Lighthouse simula um celular modesto: CPU 4× mais lenta e rede de 1,6 Mbps com
-150 ms de latência. Nesse perfil, LCP (~3,4 s) e TBT (~200–320 ms) concentram a perda. As causas,
-medidas nos relatórios:
+O perfil mobile do Lighthouse simula um celular modesto (CPU 4× mais lenta, 1,6 Mbps e 150 ms de
+latência). Os números abaixo são medidos nos relatórios.
 
-1. **A API simulada faz parte do que é entregue e viaja no bundle.** O chunk dos mocks
-   (`browser-*.js`: MSW, fixtures e o servidor Socket.IO simulado) tem 172 KB transferidos, 41%
-   dele sem uso na carga inicial, e custa de 550 a 690 ms de execução com a CPU 4× mais lenta. O
-   enunciado exige os mocks ativos também no build, então esse custo é inerente ao cenário
-   auditado (num backend real ele não existiria).
-2. **O LCP é a imagem do primeiro card e depende dos dados.** Do LCP de ~3,4 s, cerca de 485 ms
-   são de "atraso até iniciar o download da imagem": o navegador só descobre a imagem depois de
-   carregar o JavaScript, consultar o catálogo (a API simulada tem latência padrão de 120 a 320 ms,
-   de propósito) e renderizar. Numa SPA a imagem não está no HTML inicial.
-3. **Custo de execução do React, do roteador e do cache** (`render-*.js`: ~760 ms de script na
-   CPU lenta) e o CSS que bloqueia a renderização (15 KB, ~150 ms estimados).
+1. **Ícone do site com 1,1 MB.** O `favicon.png` era uma imagem de 1254×1254. O navegador baixa o
+   ícone junto com a página e, na rede simulada, esse 1,1 MB disputava a banda com a imagem do LCP.
+   Sozinho, ele levava o LCP de 3,3 s para 8,7 s e a nota de 86 para 66. Agora o `favicon.png` tem
+   64×64 (3 KB) e há um `apple-touch-icon.png` de 180×180 (23 KB).
+2. **Dependência do MSW sem uso na aplicação.** O chunk dos mocks tinha 478 KB; mais da metade
+   eram `tough-cookie` e `tldts` (lista de sufixos públicos de domínio), que o MSW usa só para o
+   armazenamento de cookies. A aplicação autentica por token e não usa cookies. No build, o `tldts`
+   é trocado por um stub de poucas linhas (`mocks/shims/tldts.ts`, alias em `vite.config.ts`).
+   O chunk caiu para 214 KB e o LCP, de 3,3 s para 2,7 s (nota de 86 para 92).
 
-Os payloads somam 208 KB de JavaScript transferido (226 KB no total na carga inicial), por isso o
-desktop, sem a limitação de CPU e rede, chega a 98.
+O que continua pesando é inerente à entrega: a API simulada viaja no bundle (a latência de 120 a
+320 ms dela entra no tempo até a imagem do LCP) e o LCP é a imagem do primeiro card, que só é
+descoberta depois do JavaScript e da consulta ao catálogo (numa SPA, ela não está no HTML).
 
-## O que foi feito
+## Outras otimizações já presentes
 
 - Rotas com code splitting (o JS de login, carrinho, pagamento etc. não entra na tela inicial).
 - Imagens em WebP com `srcset` (240, 480 e 960 px), largura e altura reservadas (CLS ≈ 0) e a
@@ -63,22 +60,20 @@ desktop, sem a limitação de CPU e rede, chega a 98.
 - Fonte Roboto Mono servida pela própria aplicação (sem terceiros).
 - Esqueletos com as mesmas proporções do conteúdo final.
 - SEO: `meta description`, Open Graph, `theme-color` e `robots.txt`.
-- Acessibilidade: alvos de toque de 24 px nos pontos dos carrosséis (o ponto desenhado continua
-  pequeno).
+- Acessibilidade: alvos de toque de 24 px nos pontos dos carrosséis.
 
 ## O que foi tentado e descartado
 
-- **Pré-carregar (`modulepreload`) os módulos carregados depois dos mocks** (mocks e aplicação).
-  Com os dois, o LCP piorou (3,2 s para 4,1 s): eles disputam a banda simulada com o que está no
-  caminho crítico. Só com os mocks, o ganho foi nulo dentro da variação das medições. Foi removido.
+- **Pré-carregar (`modulepreload`) os módulos carregados depois dos mocks.** Sem ganho medível
+  dentro da variação das medições.
+- **Carregar o `socket.io-client` sob demanda e baixar a aplicação em paralelo com os mocks.** Com
+  o ícone leve, essas duas mudanças não foram necessárias para atingir as metas e adicionam risco
+  à ordem de carregamento que o Socket.IO exige. Não foram mantidas.
 
 ## O que não foi feito, de propósito
 
 Reduzir a latência da API simulada, desligar os mocks ou carregar menos conteúdo na tela inicial
-melhoraria a nota, mas a auditoria deve refletir a entrega completa. Se a meta de 90 no mobile for
-prioridade, os próximos passos de menor risco seriam: dividir as fixtures dos mocks em partes
-carregadas sob demanda e carregar a imagem do primeiro card sem esperar o catálogo (por exemplo,
-embutir os primeiros itens no HTML), o que muda a arquitetura de dados.
+melhoraria a nota, mas a auditoria deve refletir a entrega completa. Nada disso foi alterado.
 
 ## Ambiente
 
