@@ -148,6 +148,9 @@ npm run test:e2e
   o banco simulado. Relógio, latência e eventos em tempo real são controlados nos cenários
   sensíveis a tempo (`page.clock` e `window.__mocks`).
 - Os 12 grupos de cenários do enunciado estão em `e2e/*.spec.ts`; o apoio fica em `e2e/support/`.
+- Para rodar a suíte contra uma versão já publicada, sem build local:
+  `E2E_BASE_URL=https://frontend-challenge-two-beta.vercel.app npx playwright test --grep-invert "regressão visual"`
+  (a regressão visual compara com baselines geradas localmente, por isso fica de fora).
 - Relatório HTML em `playwright-report/` e traces, vídeos e capturas das falhas em `test-results/`.
 - **Regressão visual** de início, detalhe, carrinho e pagamento, com baselines versionadas em
   `e2e/visual.spec.ts-snapshots/`. Elas são geradas no Linux; em outro sistema ou após uma

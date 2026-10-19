@@ -1,7 +1,10 @@
 import { defineConfig, devices } from '@playwright/test'
 
 const PORT = 4173
-const BASE_URL = `http://localhost:${PORT}`
+// `E2E_BASE_URL` aponta a suíte para uma versão já publicada (ex.: a da Vercel): nesse caso
+// não há build nem servidor local
+const REMOTE_URL = process.env.E2E_BASE_URL
+const BASE_URL = REMOTE_URL ?? `http://localhost:${PORT}`
 
 /**
  * Testes E2E contra o build de produção com a API simulada (MSW). Cada teste roda num
@@ -42,10 +45,12 @@ export default defineConfig({
       },
     },
   ],
-  webServer: {
-    command: `npx vite build --logLevel warn && npx vite preview --port ${PORT} --strictPort`,
-    url: BASE_URL,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: REMOTE_URL
+    ? undefined
+    : {
+        command: `npx vite build --logLevel warn && npx vite preview --port ${PORT} --strictPort`,
+        url: BASE_URL,
+        reuseExistingServer: !process.env.CI,
+        timeout: 120_000,
+      },
 })
