@@ -1,6 +1,6 @@
 # Arquitetura
 
-Documento vivo: registra as decisões técnicas, as políticas de estado e as limitações conhecidas. Contratos REST detalhados, desvios do Figma e resultados do Lighthouse são acrescentados nas etapas seguintes.
+Registra os contratos REST e de eventos, as decisões técnicas, as políticas de estado (sessão, carrinho, cache e reconciliação), as limitações conhecidas e os desvios do Figma. Setup, comandos e cenários estão no [`README.md`](README.md); os resultados do Lighthouse, em [`lighthouse/ANALISE.md`](lighthouse/ANALISE.md).
 
 ## Visão geral
 
@@ -31,6 +31,65 @@ Valores em ETH trafegam como **string decimal** (até 18 casas) e todo cálculo 
 ### Erros
 
 Toda falha sai do Axios como `ApiError` (`src/api/errors.ts`), com `code` (`validation_error`, `unauthorized`, `forbidden`, `not_found`, `conflict`, `server_error`, `timeout`, `network_error`, `cancelled`), `fields` (erros por campo) e `details` (ex.: `reason: 'quote_outdated'`). `isRetryable` marca o que pode ser repetido com segurança: 5xx, falha de rede e timeout.
+
+## Contratos REST
+
+Os schemas zod de `src/api/contracts/` são a definição dos contratos; cada arquivo traz o resumo
+das rotas no topo. Base: `VITE_API_URL` (padrão `/api`).
+
+**Cabeçalhos:** `Authorization: Bearer <token>` (sessão), `X-Guest-Cart-Id` (carrinho do
+visitante) e `Idempotency-Key` (criação de pedido).
+
+**Erro** (qualquer rota): `{ "error": { "code", "message", "fields?", "details?" } }`, com
+`code` entre `validation_error` (400), `unauthorized` (401), `forbidden` (403), `not_found` (404),
+`conflict` (409) e `server_error` (5xx). `fields` traz as mensagens por campo e `details` motivos
+como `quote_outdated`, `wallet_not_connected`, `wallet_rejected`, `session_expired` e
+`session_invalid`.
+
+| Recurso      | Rotas                                                                                                                                                              | Observações                                                                                                                                                                             |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Autenticação | `POST /auth/register`, `POST /auth/login`, `GET /auth/session`, `POST /auth/logout`                                                                                | 409 no e-mail ou usuário já usado; 401 nas credenciais inválidas e na sessão expirada                                                                                                   |
+| Catálogo     | `GET /nfts` (`q`, `category`, `network`, `minPrice`, `maxPrice`, `availability`, `feed`, `featured`, `collection`, `sort`, `page`, `pageSize`), `GET /nfts/:nftId` | A lista traz a página e as contagens por coleção e rede para os filtros; 404 se o NFT não existir                                                                                       |
+| Favoritos    | `GET /favorites`, `POST /favorites`, `DELETE /favorites/:nftId`                                                                                                    | Privado. Cada resposta devolve a lista atualizada                                                                                                                                       |
+| Carrinho     | `GET /cart`, `POST /cart/items`, `PATCH /cart/items/:itemId`, `DELETE /cart/items/:itemId`, `POST /cart/merge`                                                     | Vale para usuário (Bearer) e visitante (`X-Guest-Cart-Id`); 409 acima da disponibilidade; `merge` exige sessão                                                                          |
+| Cotação      | `POST /quote`                                                                                                                                                      | Subtotal, desconto, taxa de rede e total em ETH (strings decimais); acusa divergências do carrinho; cupom inválido ou expirado volta como erro da cotação, não como falha da requisição |
+| Pedidos      | `POST /orders`, `GET /orders?status`, `GET /orders/:orderId`                                                                                                       | Privado. Idempotente por `Idempotency-Key`. 409 `quote_outdated` e `wallet_not_connected`; pedido de outro usuário responde 404                                                         |
+| Perfil       | `GET /profile`, `PATCH /profile`, `PUT /profile/avatar` (multipart, campo `file`), `DELETE /profile/avatar`, `PUT /profile/password`                               | Privado. 409 no usuário ou e-mail já usado; a troca de senha encerra as outras sessões                                                                                                  |
+| Carteiras    | `GET /wallets`, `POST /wallets`, `PATCH /wallets/:walletId`, `POST /wallets/:walletId/connection`, `DELETE /wallets/:walletId/connection`                          | Privado. Uma carteira principal e uma secundária por usuário; o mesmo endereço não se repete. A conexão é simulada e exigida para criar pedidos                                         |
+
+### Pedido
+
+- `POST /orders` recebe `{ quoteId, walletId, network, collector }` e devolve o pedido já com um
+  **snapshot** de itens, valores, carteira e colecionador (o recibo não depende do catálogo atual).
+- Mesma chave e mesmo conteúdo devolvem o pedido já criado; mesma chave com conteúdo diferente
+  responde 409.
+- `status`: `pending` (aguardando a carteira), `confirmed` ou `rejected`. O resultado vem do
+  cenário ativo; o pagamento leva 3 s.
+
+## Contratos dos eventos (Socket.IO)
+
+Conexão em `/socket.io` (transporte `websocket`), com `auth: { token }` quando há sessão. Os
+eventos de recurso (`nft.updated` e `order.updated`) têm o formato:
+
+```json
+{
+  "id": "nft:nft-001:v7",
+  "type": "nft.updated",
+  "resource": { "type": "nft", "id": "nft-001" },
+  "version": 7,
+  "occurredAt": "2026-10-18T12:00:00.000Z",
+  "data": {}
+}
+```
+
+| Evento            | Quem recebe                           | `data`                                                                                             |
+| ----------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `nft.updated`     | todas as conexões                     | `nftId`, menor preço, preço anterior, disponibilidade total e as edições (preço e disponibilidade) |
+| `order.updated`   | só as conexões do dono do pedido      | o pedido completo (o mesmo de `GET /orders/:orderId`)                                              |
+| `session.invalid` | a conexão cuja sessão deixou de valer | sem envelope: só `{ "reason": "session_expired" ou "session_invalid" }`                            |
+
+O `id` é igual nas duplicatas do mesmo evento, e a `version` cresce a cada alteração do recurso.
+As regras de aplicação e a reconciliação com o REST estão em [Tempo real](#tempo-real).
 
 ## Cache, retries e sincronização
 
@@ -120,7 +179,7 @@ O estado do pagamento (rascunho, valores aceitos e tentativa) fica no `localStor
 | `order.updated`   | só o dono do pedido | atualiza o estado do pedido. Confirmado ou recusado é terminal.                                                                              |
 | `session.invalid` | conexão             | revalida a sessão (o 401 leva ao login)                                                                                                      |
 
-Todo evento tem `id` estável (`<recurso>:<id>:v<versão>`), recurso e versão, e é validado com zod.
+Os eventos de recurso têm `id` estável (`<recurso>:<id>:v<versão>`), recurso e versão, e todos são validados com zod.
 
 ### Regras
 
@@ -205,3 +264,29 @@ Onde o design e os requisitos do desafio conflitam ou o design é ambíguo, a de
 - 404 (`NotFound`): rota inexistente, NFT e pedido não encontrados. Pedido de outro usuário também cai aqui, de propósito, para não revelar que ele existe.
 - Erro inesperado de renderização ou de carregamento da rota (`RouteError`, `defaultErrorComponent`): o header e o rodapé continuam no ar, e "Tentar novamente" refaz o carregamento da rota.
 - Falha de dados em uma seção (`QueryError`): catálogo, NFT, carrinho, perfil, carteiras e lista de interesse mostram a mensagem da API e a nova tentativa, sem derrubar o resto da tela. Estados vazios (carrinho, pagamento, favoritos, busca sem resultado) levam a uma ação útil.
+
+## Testes, auditoria e deploy
+
+- **E2E (Playwright):** roda contra o build de produção, em desktop e mobile, com estado isolado
+  por teste e a API simulada como único backend. Os controles de `window.__mocks` mudam o mesmo
+  banco dos handlers REST e emitem os eventos pelo servidor Socket.IO simulado, então os testes
+  de tempo real passam pelo `socket.io-client` e os de REST pelos handlers do MSW. A interface é
+  a fonte das asserções, comparada com a resposta dos handlers quando faz sentido. Relógio e
+  latência são controlados nos cenários sensíveis a tempo. Há regressão visual de início,
+  detalhe, carrinho e pagamento.
+- **Lighthouse:** `npm run lighthouse` (3 medições por página e perfil, mediana). Resultados e
+  justificativas em [`lighthouse/ANALISE.md`](lighthouse/ANALISE.md).
+- **Deploy (Vercel):** `vercel.json` reescreve as rotas da SPA para o `index.html` (acesso direto
+  e refresh), exceto arquivos estáticos, e define o cache dos assets e do service worker do MSW.
+
+## Limitações conhecidas
+
+- A API é simulada no navegador: o banco vive no `localStorage` de cada visitante, e sessões,
+  pedidos e carteiras não são compartilhados entre navegadores. Em outra aba do mesmo navegador,
+  o estado é compartilhado.
+- Login social, "Esqueceu a senha?", criadores, aprendizado, atividade, ofertas, arquivos baixados,
+  suporte e newsletter estão fora do escopo e aparecem desabilitados.
+- O cadastro de carteira aceita só endereços no formato `0x`, mesmo com a rede Solana marcada.
+- Performance no mobile abaixo da meta de 90 no Lighthouse (83 a 85), explicada em
+  [`lighthouse/ANALISE.md`](lighthouse/ANALISE.md).
+- As baselines da regressão visual são do Linux.
