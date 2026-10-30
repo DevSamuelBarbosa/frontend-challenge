@@ -29,3 +29,7 @@ dist-ssr
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Segredos e configuração local
+.env
+.claude/
